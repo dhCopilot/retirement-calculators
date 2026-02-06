@@ -1,7 +1,7 @@
 /**
  * Growth Chart Visualization
  * @user-story US#4 - Results Display
- * @version 0.1.0
+ * @version 0.2.0
  */
 
 let growthChartInstance = null;

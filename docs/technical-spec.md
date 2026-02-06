@@ -1,4 +1,4 @@
-# Technical Specification - Retirement Calculator v0.1
+# Technical Specification - Retirement Calculator v0.2
 
 ## Architecture
 
@@ -34,6 +34,7 @@ Monthly Income = Annual Income / 12
 - Retirement Age: 55-75 years
 - Pension Pot: £0 - £10,000,000
 - Monthly Contribution: £0 - £100,000
+- Investment Growth Rate: 0% - 15% annually
 - Retirement Date: Must be in future
 
 ## Browser Compatibility

@@ -1,0 +1,89 @@
+{
+  "userStories": [
+    {
+      "id": "US001",
+      "title": "Basic Calculator Input Form",
+      "description": "Input my current pension details",
+      "goal": "see projections for my retirement",
+      "status": "completed",
+      "version": "0.1.0",
+      "features": [
+        "Input field for date of birth (DD/MM/YYYY)",
+        "Input field for planned retirement date",
+        "Input field for current pension pot (£)",
+        "Input field for monthly contribution (£)",
+        "All fields have validation",
+        "Clear error messages for invalid inputs"
+      ],
+      "icon": "📅"
+    },
+    {
+      "id": "US002",
+      "title": "Pension Projection Calculation",
+      "description": "see projected pension pot value at retirement",
+      "goal": "plan my retirement finances",
+      "status": "completed",
+      "version": "0.1.0",
+      "features": [
+        "Calculate years until retirement",
+        "Apply UK-standard 5% annual growth rate",
+        "Include regular monthly contributions",
+        "Account for compound growth",
+        "Display final pot value in £",
+        "Show year-by-year breakdown"
+      ],
+      "icon": "📊"
+    },
+    {
+      "id": "US003",
+      "title": "Income Projection Calculation",
+      "description": "understand what income my pension can provide",
+      "goal": "plan my annual income in retirement",
+      "status": "completed",
+      "version": "0.1.0",
+      "features": [
+        "Calculate 25% tax-free lump sum",
+        "Calculate annual income using 4% safe withdrawal rate",
+        "Provide monthly income breakdown",
+        "Note about tax-free lump sum (25%)",
+        "Display income clearly in results"
+      ],
+      "icon": "💷"
+    },
+    {
+      "id": "US004",
+      "title": "Results Display",
+      "description": "view my calculations in a clear, organized format",
+      "goal": "easily understand my retirement projection",
+      "status": "completed",
+      "version": "0.1.0",
+      "features": [
+        "Display projected pension pot prominently",
+        "Show tax-free lump sum (25%)",
+        "Show annual retirement income",
+        "Display monthly income equivalent",
+        "Interactive growth chart visualization",
+        "Responsive layout for all devices"
+      ],
+      "icon": "💰"
+    },
+    {
+      "id": "US005",
+      "title": "Investment Growth Rate Assumption",
+      "description": "specify my own annual investment growth rate assumption",
+      "goal": "model different market scenarios and make personalized projections",
+      "status": "completed",
+      "version": "0.2.0",
+      "features": [
+        "Input field for annual investment growth rate (%)",
+        "Default value of 5% (UK standard assumption)",
+        "Range validation: 0% - 15% per annum",
+        "Clear explanation of what growth rate means",
+        "Growth rate used in pension projection calculations",
+        "Results display shows which growth rate was used",
+        "Error messages for out-of-range values"
+      ],
+      "icon": "📈"
+    }
+  ]
+}

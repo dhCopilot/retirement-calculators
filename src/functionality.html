@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functionality - UK Retirement Calculator v0.2</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="functionality-style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏦 UK Retirement Calculator</h1>
+            <p class="subtitle">Functionality Overview</p>
+            <p class="version">Version 0.2.0</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-links">
+            <a href="index.html" class="nav-link">← Back to Calculator</a>
+        </nav>
+
+        <!-- Stats Section -->
+        <section class="stats-card card">
+            <h2>Project Progress</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="total-stories">5</div>
+                    <div class="stat-label">Total Features</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="completed-stories">5</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="completion-percentage">100%</div>
+                    <div class="stat-label">Completion</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Stories Section -->
+        <section class="card">
+            <h2>Feature Details</h2>
+            <div id="stories-container" class="stories-container">
+                <p class="loading">Loading features...</p>
+            </div>
+        </section>
+
+        <!-- Information -->
+        <section class="card info-section">
+            <h2>About This Page</h2>
+            <p>
+                This page displays all implemented and planned features of the UK Retirement Calculator. 
+                Each feature is tracked as a user story that describes the value it provides.
+            </p>
+            <h3>Status Legend</h3>
+            <ul class="legend">
+                <li><span class="legend-mark completed">✅</span> <strong>Completed</strong> - Feature is fully implemented and tested</li>
+                <li><span class="legend-mark in-progress">🚧</span> <strong>In Progress</strong> - Currently being developed</li>
+                <li><span class="legend-mark planned">📅</span> <strong>Planned</strong> - Feature is scheduled for a future release</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p>⚠️ This calculator provides estimates only. Please consult a financial advisor for personalized advice.</p>
+            <p class="small">Calculations based on UK pension regulations as of 2025</p>
+        </footer>
+    </div>
+
+    <script src="functionality.js"></script>
+</body>
+</html>

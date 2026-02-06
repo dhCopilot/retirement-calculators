@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UK Retirement Calculator v0.1</title>
+    <title>UK Retirement Calculator v0.2</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,7 +11,8 @@
         <header>
             <h1>🏦 UK Pension Calculator</h1>
             <p class="subtitle">Project your retirement savings</p>
-            <p class="version">Version 0.1.0</p>
+            <p class="version">Version 0.2.0</p>
+            <a href="functionality.html" class="view-features-link">📋 View All Features</a>
         </header>
 
         <!-- Calculator Form -->
@@ -38,6 +39,12 @@
                 <input type="number" id="monthlyContribution" min="0" step="10" placeholder="500" required>
             </div>
 
+            <div class="form-group">
+                <label for="investmentGrowth">📊 Annual Investment Growth Rate (%):</label>
+                <input type="number" id="investmentGrowth" min="0" max="15" step="0.1" value="5" placeholder="5">
+                <p class="form-hint">Default 5% based on UK historical averages. Range: 0% - 15%</p>
+            </div>
+
             <button id="calculateBtn" class="btn-primary">Calculate My Pension</button>
         </section>
 
@@ -45,11 +52,13 @@
         <section id="results" class="card" style="display: none;">
             <h2>Your Retirement Projection</h2>
             
+            <p class="results-info">Based on <span id="resultsGrowthRate">5%</span> annual investment growth</p>
+            
             <div class="results-grid">
                 <div class="result-card highlight">
                     <h3>🎯 Projected Pot at Retirement</h3>
                     <p class="big-number" id="projectedPot">£0</p>
-                    <p class="sub-text">Based on 5% annual growth</p>
+                    <p class="sub-text">Based on <span id="cardGrowthRate">5%</span> annual growth</p>
                 </div>
 
                 <div class="result-card">
