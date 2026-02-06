@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Retirement Calculator v0.1</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏦 UK Pension Calculator</h1>
+            <p class="subtitle">Project your retirement savings</p>
+            <p class="version">Version 0.1.0</p>
+        </header>
+
+        <!-- Calculator Form -->
+        <section id="calculator-form" class="card">
+            <h2>Your Details</h2>
+            
+            <div class="form-group">
+                <label for="birthDate">📅 Date of Birth:</label>
+                <input type="date" id="birthDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="retirementDate">🎯 Planned Retirement Date:</label>
+                <input type="date" id="retirementDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="currentPot">💰 Current Pension Pot (£):</label>
+                <input type="number" id="currentPot" min="0" step="100" placeholder="50000" required>
+            </div>
+
+            <div class="form-group">
+                <label for="monthlyContribution">📈 Monthly Contribution (£):</label>
+                <input type="number" id="monthlyContribution" min="0" step="10" placeholder="500" required>
+            </div>
+
+            <button id="calculateBtn" class="btn-primary">Calculate My Pension</button>
+        </section>
+
+        <!-- Results Display -->
+        <section id="results" class="card" style="display: none;">
+            <h2>Your Retirement Projection</h2>
+            
+            <div class="results-grid">
+                <div class="result-card highlight">
+                    <h3>🎯 Projected Pot at Retirement</h3>
+                    <p class="big-number" id="projectedPot">£0</p>
+                    <p class="sub-text">Based on 5% annual growth</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>💵 Tax-Free Lump Sum</h3>
+                    <p class="big-number" id="taxFreeLump">£0</p>
+                    <p class="sub-text">25% of your pot (UK rules)</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>📊 Annual Income</h3>
+                    <p class="big-number" id="annualIncome">£0</p>
+                    <p class="sub-text">Monthly: <span id="monthlyIncome">£0</span></p>
+                    <p class="sub-text-small">Based on 4% safe withdrawal</p>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Growth Projection</h3>
+                <canvas id="growthChart"></canvas>
+            </div>
+
+            <button id="recalculateBtn" class="btn-secondary">Recalculate</button>
+        </section>
+
+        <footer>
+            <p>⚠️ This calculator provides estimates only. Please consult a financial advisor for personalized advice.</p>
+            <p class="small">Calculations based on UK pension regulations as of 2025</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="calculators/pension-projection.js"></script>
+    <script src="calculators/income-projection.js"></script>
+    <script src="validation/input-validator.js"></script>
+    <script src="charts/growth-chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
