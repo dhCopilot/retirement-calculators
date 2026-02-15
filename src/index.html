@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UK Retirement Calculator v0.2</title>
+    <title>UK Retirement Calculator v0.3</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
         <header>
             <h1>🏦 UK Pension Calculator</h1>
             <p class="subtitle">Project your retirement savings</p>
-            <p class="version">Version 0.2.0</p>
+            <p class="version">Version 0.3.0</p>
             <a href="functionality.html" class="view-features-link">📋 View All Features</a>
         </header>
 
@@ -22,6 +22,24 @@
             <div class="form-group">
                 <label for="birthDate">📅 Date of Birth:</label>
                 <input type="date" id="birthDate" required>
+            </div>
+
+            <!-- Retirement Date Calculator -->
+            <div class="form-group retirement-calculator">
+                <label for="currentAge">OR 📊 Enter Current Age to Calculate Retirement Date:</label>
+                <div class="age-input-group">
+                    <input type="number" id="currentAge" min="18" max="75" placeholder="45" class="age-input">
+                    <select id="retirementAgeSelect" class="age-select">
+                        <option value="55">Retire at 55 (UK minimum)</option>
+                        <option value="60">Retire at 60</option>
+                        <option value="65">Retire at 65 (standard)</option>
+                        <option value="67">Retire at 67 (increasing)</option>
+                        <option value="68">Retire at 68</option>
+                        <option value="70">Retire at 70</option>
+                    </select>
+                    <button type="button" id="calculateRetirementDateBtn" class="btn-small">Calculate Date</button>
+                </div>
+                <p class="form-hint">This will automatically fill the retirement date field above</p>
             </div>
 
             <div class="form-group">
@@ -45,6 +63,40 @@
                 <p class="form-hint">Default 5% based on UK historical averages. Range: 0% - 15%</p>
             </div>
 
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="includeInflation" checked>
+                    <span>📉 Include Inflation Adjustment</span>
+                </label>
+                <p class="form-hint">Show results in today's pounds (real values) vs future pounds (nominal values)</p>
+            </div>
+
+            <div class="form-group" id="inflationRateGroup">
+                <label for="inflationRate">Inflation Rate (%) - 0% to 5%:</label>
+                <input type="number" id="inflationRate" min="0" max="5" step="0.1" value="2.5" placeholder="2.5">
+                <p class="form-hint">Default 2.5% based on UK average. Used when inflation adjustment is enabled.</p>
+            </div>
+
+            <div class="form-group">
+                <label>📊 Scenario Analysis - Compare Growth Rates:</label>
+                <p class="form-hint">See how different growth scenarios affect your retirement</p>
+                <div class="scenario-buttons">
+                    <button type="button" class="scenario-btn" id="scenarioWeakBtn" data-scenario="weak" data-rate="2">
+                        <span class="scenario-label">Weak</span>
+                        <span class="scenario-rate">2%</span>
+                    </button>
+                    <button type="button" class="scenario-btn active" id="scenarioAverageBtn" data-scenario="average" data-rate="5">
+                        <span class="scenario-label">Average</span>
+                        <span class="scenario-rate">5%</span>
+                    </button>
+                    <button type="button" class="scenario-btn" id="scenarioStrongBtn" data-scenario="strong" data-rate="8">
+                        <span class="scenario-label">Strong</span>
+                        <span class="scenario-rate">8%</span>
+                    </button>
+                </div>
+                <p class="form-hint">Selected scenario overrides the investment growth rate above</p>
+            </div>
+
             <button id="calculateBtn" class="btn-primary">Calculate My Pension</button>
         </section>
 
@@ -52,12 +104,18 @@
         <section id="results" class="card" style="display: none;">
             <h2>Your Retirement Projection</h2>
             
+            <div class="inflation-badge" id="inflationBadge" style="display: none;">
+                📉 Inflation Adjustment Included (Real values shown)
+            </div>
+
             <p class="results-info">Based on <span id="resultsGrowthRate">5%</span> annual investment growth</p>
             
             <div class="results-grid">
                 <div class="result-card highlight">
                     <h3>🎯 Projected Pot at Retirement</h3>
                     <p class="big-number" id="projectedPot">£0</p>
+                    <p class="sub-text" id="projectedPotReal" style="display: none;">Real value (today's pounds)</p>
+                    <p class="sub-text" id="projectedPotNominal" style="display: none;">Nominal value (future pounds)</p>
                     <p class="sub-text">Based on <span id="cardGrowthRate">5%</span> annual growth</p>
                 </div>
 
@@ -71,7 +129,67 @@
                     <h3>📊 Annual Income</h3>
                     <p class="big-number" id="annualIncome">£0</p>
                     <p class="sub-text">Monthly: <span id="monthlyIncome">£0</span></p>
+                    <p class="sub-text" id="incomeAlternative" style="display: none;"></p>
                     <p class="sub-text-small">Based on 4% safe withdrawal</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>💰 Total Contributions</h3>
+                    <p class="big-number" id="totalContributions">£0</p>
+                    <p class="sub-text">Initial pot + monthly contributions</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>📈 Investment Growth</h3>
+                    <p class="big-number" id="growthAmount">£0</p>
+                    <p class="sub-text" id="growthPercentage">0% of final pot</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>⏱️ Time Horizon</h3>
+                    <p class="big-number" id="yearsToRetirement">0</p>
+                    <p class="sub-text">Years until retirement</p>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Growth Projection</h3>
+                <canvas id="growthChart"></canvas>
+            </div>
+
+            <div id="scenarioComparison" style="display: none;">
+                <h3>📊 Scenario Analysis Comparison</h3>
+                <p class="form-hint">Comparison based on different investment growth assumptions:</p>
+                
+                <div class="scenario-results-grid">
+                    <div class="scenario-result-card">
+                        <h4>🔴 Weak Returns</h4>
+                        <p class="scenario-label">2% Annual Growth</p>
+                        <div class="scenario-value">
+                            <p><strong>Projected Pot:</strong> <span id="scenarioWeakPot">£0</span></p>
+                            <p><strong>Annual Income:</strong> <span id="scenarioWeakIncome">£0</span></p>
+                        </div>
+                        <p class="scenario-diff" id="scenarioWeakDiff"></p>
+                    </div>
+
+                    <div class="scenario-result-card highlight">
+                        <h4>🟢 Average Returns (Base Case)</h4>
+                        <p class="scenario-label">5% Annual Growth</p>
+                        <div class="scenario-value">
+                            <p><strong>Projected Pot:</strong> <span id="scenarioAveragePot">£0</span></p>
+                            <p><strong>Annual Income:</strong> <span id="scenarioAverageIncome">£0</span></p>
+                        </div>
+                    </div>
+
+                    <div class="scenario-result-card">
+                        <h4>🟡 Strong Returns</h4>
+                        <p class="scenario-label">8% Annual Growth</p>
+                        <div class="scenario-value">
+                            <p><strong>Projected Pot:</strong> <span id="scenarioStrongPot">£0</span></p>
+                            <p><strong>Annual Income:</strong> <span id="scenarioStrongIncome">£0</span></p>
+                        </div>
+                        <p class="scenario-diff" id="scenarioStrongDiff"></p>
+                    </div>
                 </div>
             </div>
 
@@ -83,6 +201,82 @@
             <button id="recalculateBtn" class="btn-secondary">Recalculate</button>
         </section>
 
+        <!-- Retirement Spending Analysis -->
+        <section id="retirementSpending" class="card" style="display: none;">
+            <h2>Retirement Spending Analysis</h2>
+            <p class="form-hint">Plan how long your retirement savings will last and test different spending scenarios</p>
+
+            <div class="spending-mode-selector">
+                <label class="radio-label">
+                    <input type="radio" name="spendingMode" value="mode-a" checked>
+                    <span>📊 Mode A: Spending Plan</span>
+                </label>
+                <p class="form-hint">Enter your planned annual spending and see if your money lasts</p>
+                
+                <label class="radio-label">
+                    <input type="radio" name="spendingMode" value="mode-b">
+                    <span>📈 Mode B: Maximum Sustainable Spending</span>
+                </label>
+                <p class="form-hint">Discover the maximum you can safely spend each year</p>
+            </div>
+
+            <div id="modeAInputs" class="mode-inputs">
+                <div class="form-group">
+                    <label for="annualSpending">💷 Annual Spending Amount (£):</label>
+                    <input type="number" id="annualSpending" min="0" step="1000" placeholder="30000" value="30000">
+                    <p class="form-hint">How much do you plan to spend each year in retirement?</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="lifeExpectancy">🎂 Life Expectancy (years):</label>
+                <input type="number" id="lifeExpectancy" min="60" max="120" value="100" placeholder="100">
+                <p class="form-hint">Age to plan for - conservative estimate recommended (60-120)</p>
+            </div>
+
+            <button id="analyzeSpendingBtn" class="btn-primary">Analyze Spending Plan</button>
+
+            <div id="spendingResults" style="display: none; margin-top: 30px;">
+                <div id="spendingStatus" class="spending-status-card"></div>
+                
+                <div class="spending-summary">
+                    <h3>Retirement Summary</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <p class="summary-label">Starting Pot</p>
+                            <p class="summary-value" id="summaryStartingPot">£0</p>
+                        </div>
+                        <div class="summary-item">
+                            <p class="summary-label">Annual Spending</p>
+                            <p class="summary-value" id="summaryAnnualSpending">£0</p>
+                        </div>
+                        <div class="summary-item">
+                            <p class="summary-label">Retirement Duration</p>
+                            <p class="summary-value" id="summaryRetirementYears">0 years</p>
+                        </div>
+                        <div class="summary-item">
+                            <p class="summary-label">Total Spent</p>
+                            <p class="summary-value" id="summaryTotalSpent">£0</p>
+                        </div>
+                        <div class="summary-item">
+                            <p class="summary-label">Final Balance</p>
+                            <p class="summary-value" id="summaryFinalBalance">£0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Retirement Drawdown Projection</h3>
+                    <canvas id="spendingChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Button to toggle retirement spending analysis -->
+        <section id="spendingToggle" class="card" style="display: none; margin-top: 20px; text-align: center;">
+            <button id="toggleSpendingAnalysisBtn" class="btn-secondary">💰 Analyze Retirement Spending Plan</button>
+        </section>
+
         <footer>
             <p>⚠️ This calculator provides estimates only. Please consult a financial advisor for personalized advice.</p>
             <p class="small">Calculations based on UK pension regulations as of 2025</p>
@@ -92,8 +286,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="calculators/pension-projection.js"></script>
     <script src="calculators/income-projection.js"></script>
+    <script src="calculators/inflation-calculator.js"></script>
+    <script src="calculators/retirement-income.js"></script>
     <script src="validation/input-validator.js"></script>
     <script src="charts/growth-chart.js"></script>
+    <script src="charts/retirement-projection-chart.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
