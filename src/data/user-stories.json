@@ -2,88 +2,240 @@
   "userStories": [
     {
       "id": "US001",
-      "title": "Basic Calculator Input Form",
-      "description": "Input my current pension details",
-      "goal": "see projections for my retirement",
+      "title": "Calculator Input Form",
+      "description": "input my current pension details and retirement plans",
+      "goal": "see projections based on my personal circumstances",
       "status": "completed",
       "version": "0.1.0",
       "features": [
-        "Input field for date of birth (DD/MM/YYYY)",
-        "Input field for planned retirement date",
-        "Input field for current pension pot (£)",
-        "Input field for monthly contribution (£)",
-        "All fields have validation",
-        "Clear error messages for invalid inputs"
+        "Date of birth input with age display (years, months, days)",
+        "Planned retirement date selector",
+        "Current pension pot amount (£) with comma formatting",
+        "Monthly contribution amount (£) with comma formatting",
+        "Inflation toggle with configurable rate (0–5%, default 2.5%)",
+        "Min/max validation (age 18–75, pot £0–£10M)",
+        "Clear error messages for invalid inputs",
+        "Mobile responsive form layout"
       ],
       "icon": "📅"
     },
     {
       "id": "US002",
       "title": "Pension Projection Calculation",
-      "description": "see projected pension pot value at retirement",
-      "goal": "plan my retirement finances",
+      "description": "see my projected pension pot value at retirement",
+      "goal": "plan my retirement finances with compound growth",
       "status": "completed",
       "version": "0.1.0",
       "features": [
-        "Calculate years until retirement",
-        "Apply UK-standard 5% annual growth rate",
+        "Calculate years until retirement from input dates",
+        "Apply selected growth rate (default 5% UK standard)",
         "Include regular monthly contributions",
-        "Account for compound growth",
+        "Compound growth with monthly compounding",
         "Display final pot value in £",
-        "Show year-by-year breakdown"
+        "Year-by-year breakdown with pot values",
+        "Separate display of contributions vs growth amount",
+        "94 automated tests validating calculations"
       ],
       "icon": "📊"
     },
     {
       "id": "US003",
-      "title": "Income Projection Calculation",
-      "description": "understand what income my pension can provide",
-      "goal": "plan my annual income in retirement",
+      "title": "Scenario Analysis & Comparison",
+      "description": "see my pension projections under 3 different growth scenarios",
+      "goal": "understand the range of possible outcomes and plan confidently",
       "status": "completed",
-      "version": "0.1.0",
+      "version": "0.3.0",
       "features": [
-        "Calculate 25% tax-free lump sum",
-        "Calculate annual income using 4% safe withdrawal rate",
-        "Provide monthly income breakdown",
-        "Note about tax-free lump sum (25%)",
-        "Display income clearly in results"
+        "3 pre-defined scenarios: Weak (2%), Average (5%), Strong (8%)",
+        "Scenario selector buttons with visual feedback",
+        "Side-by-side comparison cards showing pot & income per scenario",
+        "Difference display (£ and %) vs Average base case",
+        "Each scenario runs full pension + income projection",
+        "Scenarios respect inflation settings (real vs nominal values)",
+        "Selected scenario overrides manual growth rate input"
       ],
-      "icon": "💷"
+      "icon": "📉"
     },
     {
       "id": "US004",
-      "title": "Results Display",
-      "description": "view my calculations in a clear, organized format",
-      "goal": "easily understand my retirement projection",
+      "title": "Results Display & Visualization",
+      "description": "view my calculations in a clear, organized, visual format",
+      "goal": "quickly understand my retirement outlook at a glance",
       "status": "completed",
-      "version": "0.1.0",
+      "version": "0.3.0",
       "features": [
-        "Display projected pension pot prominently",
-        "Show tax-free lump sum (25%)",
-        "Show annual retirement income",
-        "Display monthly income equivalent",
-        "Interactive growth chart visualization",
-        "Responsive layout for all devices"
+        "Projected pension pot displayed prominently",
+        "Tax-free lump sum card (25%, max £268,275 UK cap)",
+        "Annual and monthly retirement income cards",
+        "Total contributions and growth amount cards",
+        "Inflation badge indicating real vs nominal values",
+        "Scenario comparison grid (Weak/Average/Strong)",
+        "Currency formatted with commas throughout",
+        "Responsive card layout for all screen sizes"
       ],
       "icon": "💰"
     },
     {
       "id": "US005",
-      "title": "Investment Growth Rate Assumption",
-      "description": "specify my own annual investment growth rate assumption",
-      "goal": "model different market scenarios and make personalized projections",
+      "title": "Retirement Planning & Spending Analysis",
+      "description": "see how long my pension will last and plan my retirement spending",
+      "goal": "retire with confidence knowing my money will last",
       "status": "completed",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "features": [
-        "Input field for annual investment growth rate (%)",
-        "Default value of 5% (UK standard assumption)",
-        "Range validation: 0% - 15% per annum",
-        "Clear explanation of what growth rate means",
-        "Growth rate used in pension projection calculations",
-        "Results display shows which growth rate was used",
-        "Error messages for out-of-range values"
+        "Investment growth rate input (0–15%) with 5% default",
+        "Mode A — Spending Plan: enter annual spend, see if money lasts",
+        "Mode B — Maximum Sustainable Spending: calculates max safe spend",
+        "Year-by-year pot balance with spending deducted",
+        "Inflation-adjusted spending (increases each year)",
+        "✅ Money Lasts or ⚠️ Money Runs Out at Age X status",
+        "Retirement summary: starting pot, total spent, final balance",
+        "Life expectancy input (60–120 years, default 100)"
       ],
       "icon": "📈"
+    },
+    {
+      "id": "US006",
+      "title": "Lifecycle Chart & Longevity Planning",
+      "description": "see my complete financial journey from now through retirement on a single chart",
+      "goal": "understand the entire arc of my pension — accumulation to drawdown — in one visual",
+      "status": "completed",
+      "version": "0.3.0",
+      "features": [
+        "Unified lifecycle chart: current age to age 100",
+        "Accumulation phase: 3 scenario lines (Weak/Average/Strong)",
+        "Drawdown phase: pot declining with annual spending",
+        "Retirement transition line marking the changeover",
+        "Interactive tooltips with age, pot value, and scenario",
+        "Chart.js with responsive sizing and legend toggle",
+        "Y-axis formatted as £k/£M for readability",
+        "Milestone timeline (retirement marker + age 100 target)"
+      ],
+      "icon": "📉"
+    },
+    {
+      "id": "US007",
+      "title": "Cash Flow Chart & Shortfall Analysis",
+      "description": "see my annual retirement cash flow with funded vs unfunded spending",
+      "goal": "identify exactly when and how much my pension runs short",
+      "status": "completed",
+      "version": "0.3.1",
+      "features": [
+        "Cash flow bar chart: retirement to age 100",
+        "3-scenario stacked bars (Weak/Average/Strong)",
+        "Solid bars = funded by pension pot",
+        "Faded bars = shortfall (unfunded spending)",
+        "Stacking band algorithm for Chart.js compatibility",
+        "Drawdown engine with year-by-year shortfall tracking",
+        "Shortfall + funded = total spending identity enforced",
+        "Longevity planning section with annual spending input"
+      ],
+      "icon": "💸"
+    },
+    {
+      "id": "US008",
+      "title": "Inflation Calculator",
+      "description": "see my pension values adjusted for inflation",
+      "goal": "understand what my money will really be worth in today's prices",
+      "status": "completed",
+      "version": "0.3.0",
+      "features": [
+        "Convert future values to real (today's pounds)",
+        "Convert real values to nominal (future pounds)",
+        "Configurable inflation rate (0–5%, default 2.5%)",
+        "Year-by-year real vs nominal pot values",
+        "Real and nominal income projections",
+        "Toggle inflation on/off globally",
+        "High inflation scenarios supported (up to 10%)",
+        "Mathematical inverse: inflate(deflate(x)) ≈ x"
+      ],
+      "icon": "📉"
+    },
+    {
+      "id": "US009",
+      "title": "Enterprise Architecture & Modularity",
+      "description": "have a well-structured, maintainable codebase",
+      "goal": "enable rapid feature development and reliable testing",
+      "status": "completed",
+      "version": "0.4.0",
+      "features": [
+        "APP_CONFIG: frozen configuration object with UK rules",
+        "Utility modules: formatting.js, date-utils.js, drawdown.js, form-helpers.js",
+        "Chart builders: lifecycle-chart-builder.js, cash-flow-chart-builder.js",
+        "Slim app.js orchestrator (507 lines, down from 1,259)",
+        "94 automated Jest tests across 6 test suites",
+        "Input validation module with per-field error messages",
+        "All functions testable in isolation (no DOM coupling)",
+        "config.js with scenario rates, UK pension rules, chart colours"
+      ],
+      "icon": "🏗️"
+    },
+    {
+      "id": "US010",
+      "title": "Test Suite Documentation Page",
+      "description": "view all automated tests with explanations",
+      "goal": "understand what is tested, why, and what each test expects",
+      "status": "completed",
+      "version": "0.4.1",
+      "features": [
+        "Standalone test documentation page (tests.html)",
+        "94 tests documented across 6 suites",
+        "Each test shows: name, rationale, expected result",
+        "Collapsible/expandable suite sections",
+        "Icons: 📐 Structure, 🔢 Math, 🛡️ Edge case, 🔗 Integration",
+        "Stats dashboard: total tests, suites, pass rate",
+        "Linked from calculator and features pages",
+        "Consistent styling with main application"
+      ],
+      "icon": "🧪"
+    },
+    {
+      "id": "US011",
+      "title": "Tax Calculations",
+      "description": "see income tax on pension withdrawals",
+      "goal": "understand my after-tax retirement income",
+      "status": "planned",
+      "version": "0.5.0",
+      "features": [
+        "Personal allowance: £12,570",
+        "Basic rate: 20% (£12,571–£50,270)",
+        "Higher rate: 40% (£50,271–£125,140)",
+        "Net income after tax display",
+        "Tax breakdown card"
+      ],
+      "icon": "🧾"
+    },
+    {
+      "id": "US012",
+      "title": "State Pension Integration",
+      "description": "include state pension in my projections",
+      "goal": "see my total retirement income including state pension",
+      "status": "planned",
+      "version": "0.5.0",
+      "features": [
+        "Full state pension: £11,500/year",
+        "Triple lock: 2.5% minimum increase",
+        "State pension age lookup",
+        "Deferral bonus: 5.8% per year",
+        "Combined income display"
+      ],
+      "icon": "🏛️"
+    },
+    {
+      "id": "US013",
+      "title": "Multiple Pension Pots",
+      "description": "manage separate pension pots (ISA, SIPP, Workplace)",
+      "goal": "see a consolidated view of all my retirement savings",
+      "status": "planned",
+      "version": "0.5.0",
+      "features": [
+        "Support for 10+ pots",
+        "Individual growth rates per pot",
+        "Tax treatment per pot type",
+        "Consolidated projection view",
+        "Per-pot contribution tracking"
+      ],
+      "icon": "📦"
     }
   ]
 }
