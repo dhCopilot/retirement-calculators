@@ -1,26 +1,62 @@
-# US#4: Results Display with Visualization
+# US#4: Results Display & Visualization
 
 **As a** UK pension saver  
-**I want to** see my results in a clear, visual format  
+**I want to** see my pension calculations in a clear, organized, visual format  
 **So that** I can quickly understand my retirement outlook
 
 ## Acceptance Criteria
-- [x] Display projected pot value prominently
-- [x] Show annual and monthly income projections
-- [x] Display tax-free lump sum amount
-- [x] Show total contributions made
-- [x] Include growth vs contributions chart
-- [x] Responsive design for mobile
 
-## Technical Implementation
-- Chart.js for visualization
-- Currency formatting: £XXX,XXX.XX
-- Responsive grid layout
+### Results Display
+- [ ] Display projected pension pot prominently
+- [ ] Show tax-free lump sum (25% of pot, max £268,275)
+- [ ] Show annual retirement income
+- [ ] Show monthly income equivalent
+- [ ] Show total contributions made
+- [ ] Show growth amount (separate from contributions)
 
-## Files
-- `src/index.html`
-- `src/charts/growth-chart.js`
-- `src/style.css`
+### Inflation Information
+- [ ] Show current inflation setting (ON or OFF)
+- [ ] Show inflation rate being used (0-5%)
+- [ ] If inflation ON: Display real values (today's pounds)
+- [ ] If inflation ON: Display nominal values (future pounds)
+- [ ] Badge indicating "Inflation Included" or "Nominal Only"
 
-## Status
-✅ Completed in v0.1.0
+### Scenario Comparison Results
+- [ ] Display 3 scenario cards (Weak, Average, Strong)
+- [ ] Each card shows pot, income, and comparison
+- [ ] Highlight average as base case
+- [ ] Show differences in both £ and %
+- [ ] Side-by-side layout on desktop
+- [ ] Stack layout on mobile
+
+### Growth Chart Visualization
+- [ ] Line chart showing pot growth over time
+- [ ] Show "Your Contributions" line separately
+- [ ] Show "Total Growth" visually
+- [ ] Chart responsive to screen size
+- [ ] Legend clearly labeled
+- [ ] Currency formatted on Y-axis
+- [ ] Interactive tooltips on hover
+
+### Mobile Responsiveness
+- [ ] All content readable on small screens
+- [ ] Cards stack vertically on mobile
+- [ ] Chart maintains visibility
+- [ ] Touch-friendly sizing
+- [ ] No horizontal scrolling needed
+- [ ] Font sizes readable (min 14px)
+
+## Files to Create/Modify
+- `src/index.html` (result cards structure)
+- `src/style.css` (styling and layout)
+- `src/charts/growth-chart.js` (Chart.js configuration)
+- `src/app.js` (populate results, event handling)
+
+## Definition of Done
+- [ ] Results display functional and styled
+- [ ] Charts render correctly
+- [ ] Mobile responsive verified
+- [ ] Inflation badges display
+- [ ] All values formatted correctly
+- [ ] Tests passing (80%+ coverage)
+- [ ] Code reviewed
