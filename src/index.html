@@ -3,426 +3,554 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NestMapOS - Professional Pension & Retirement Planning</title>
+    <title>NestMapOS — Professional Pension & Retirement Planning</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="professional-forms.css">
+    <style>
+        /* ── Home Page Styles ─────────────────────────────────── */
+        .hero {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 60%, #3b6dbd 100%);
+            color: white;
+            padding: 60px 40px 50px;
+            border-radius: 14px;
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(30, 60, 114, 0.25);
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 70%, rgba(255,255,255,0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero h1 {
+            font-size: 3.2em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        .hero .tagline {
+            font-size: 1.4em;
+            font-weight: 600;
+            opacity: 0.98;
+            margin-bottom: 6px;
+        }
+        .hero .tagline-sub {
+            font-size: 1.05em;
+            opacity: 0.85;
+            font-weight: 300;
+            margin-bottom: 28px;
+        }
+        .hero .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        .hero-cta {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .btn-hero {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 1.05em;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .btn-hero-primary {
+            background: white;
+            color: #1e3c72;
+        }
+        .btn-hero-primary:hover {
+            background: #e8f0fe;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        .btn-hero-secondary {
+            background: rgba(255,255,255,0.12);
+            color: white;
+            border-color: rgba(255,255,255,0.35);
+        }
+        .btn-hero-secondary:hover {
+            background: rgba(255,255,255,0.22);
+            border-color: rgba(255,255,255,0.6);
+            transform: translateY(-2px);
+        }
+
+        /* What You Can Do */
+        .capabilities-heading {
+            text-align: center;
+            color: #1e3c72;
+            font-size: 1.6em;
+            font-weight: 700;
+            margin-bottom: 28px;
+        }
+        .capabilities {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        .capability-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px 28px;
+            border: 1px solid #e8ecf1;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+        .capability-card:hover {
+            box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+            transform: translateY(-3px);
+        }
+        .capability-icon {
+            font-size: 2em;
+            margin-bottom: 14px;
+            display: block;
+        }
+        .capability-card h3 {
+            font-size: 1.15em;
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .capability-card p {
+            font-size: 0.92em;
+            color: #555;
+            line-height: 1.65;
+        }
+        .capability-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 12px 0 0 0;
+        }
+        .capability-card ul li {
+            font-size: 0.88em;
+            color: #555;
+            padding: 4px 0 4px 22px;
+            position: relative;
+        }
+        .capability-card ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: 700;
+        }
+
+        /* How It Works */
+        .steps-section {
+            background: white;
+            border-radius: 12px;
+            padding: 40px 36px;
+            margin-bottom: 32px;
+            border: 1px solid #e8ecf1;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .steps-section h2 {
+            text-align: center;
+            color: #1e3c72;
+            font-size: 1.6em;
+            margin-bottom: 32px;
+        }
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 28px;
+        }
+        .step {
+            text-align: center;
+            padding: 20px 10px;
+        }
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            font-size: 1.3em;
+            font-weight: 800;
+            border-radius: 50%;
+            margin-bottom: 16px;
+        }
+        .step h3 {
+            font-size: 1.05em;
+            color: #1e3c72;
+            margin-bottom: 8px;
+        }
+        .step p {
+            font-size: 0.88em;
+            color: #666;
+            line-height: 1.55;
+        }
+
+        /* Tech & Quality section */
+        .quality-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .quality-card {
+            background: linear-gradient(135deg, #f5f8fb, #f0f5fa);
+            border-radius: 10px;
+            padding: 24px;
+            border: 1px solid #d5dce0;
+        }
+        .quality-card h4 {
+            font-size: 1em;
+            color: #1e3c72;
+            margin-bottom: 6px;
+        }
+        .quality-card p {
+            font-size: 0.87em;
+            color: #555;
+            line-height: 1.55;
+        }
+
+        /* UK rules callout */
+        .uk-rules {
+            background: linear-gradient(135deg, #fff8e1, #fffde7);
+            border: 1px solid #ffd54f;
+            border-radius: 10px;
+            padding: 28px 32px;
+            margin-bottom: 32px;
+        }
+        .uk-rules h3 {
+            color: #e65100;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        .uk-rules ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            columns: 2;
+            column-gap: 32px;
+        }
+        .uk-rules ul li {
+            font-size: 0.9em;
+            color: #444;
+            padding: 5px 0 5px 24px;
+            position: relative;
+            break-inside: avoid;
+        }
+        .uk-rules ul li::before {
+            content: '🇬🇧';
+            position: absolute;
+            left: 0;
+            font-size: 0.85em;
+        }
+
+        /* Page links grid */
+        .page-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        .page-link-card {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: white;
+            padding: 22px 26px;
+            border-radius: 10px;
+            border: 1.5px solid #e8ecf1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .page-link-card:hover {
+            border-color: #2a5298;
+            box-shadow: 0 4px 16px rgba(42, 82, 152, 0.15);
+            transform: translateY(-2px);
+        }
+        .page-link-icon {
+            font-size: 2em;
+            flex-shrink: 0;
+        }
+        .page-link-text h3 {
+            color: #1e3c72;
+            font-size: 1.05em;
+            margin-bottom: 4px;
+        }
+        .page-link-text p {
+            color: #666;
+            font-size: 0.85em;
+            line-height: 1.45;
+        }
+
+        /* Disclaimer bar */
+        .disclaimer {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 18px 24px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .disclaimer-icon {
+            font-size: 1.3em;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .disclaimer p {
+            font-size: 0.88em;
+            color: #555;
+            line-height: 1.55;
+        }
+
+        /* Footer for home */
+        .home-footer {
+            text-align: center;
+            padding: 30px 20px 20px;
+            color: #888;
+            font-size: 0.85em;
+        }
+        .home-footer a {
+            color: #2a5298;
+            text-decoration: none;
+        }
+        .home-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .hero { padding: 40px 24px 36px; }
+            .hero h1 { font-size: 2.2em; }
+            .hero .tagline { font-size: 1.1em; }
+            .hero-cta { flex-direction: column; align-items: center; }
+            .btn-hero { width: 100%; max-width: 300px; justify-content: center; }
+            .uk-rules ul { columns: 1; }
+            .steps-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.8em; }
+            .steps-grid { grid-template-columns: 1fr; }
+            .capabilities { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <header>
+
+        <!-- ── Hero ─────────────────────────────────────────── -->
+        <section class="hero">
             <h1>NestMapOS</h1>
-            <div class="slogan-container">
-                <span class="slogan-icon">📈</span>
-                <p class="subtitle">Financial Management ReImagined</p>
-                <span class="slogan-subtext">Professional Retirement Planning & Wealth Optimization</span>
+            <p class="tagline">Financial Management ReImagined</p>
+            <p class="tagline-sub">Professional UK Pension & Retirement Planning — free, private, no sign-up</p>
+            <span class="version-badge">v0.4.1</span>
+
+            <div class="hero-cta">
+                <a href="calculator.html" class="btn-hero btn-hero-primary">📊 Launch Calculator</a>
+                <a href="functionality.html" class="btn-hero btn-hero-secondary">📋 View All Features</a>
             </div>
-            <p class="version">v0.4.0</p>
-            <a href="functionality.html" class="view-features-link">📋 View All Features</a>
-            <a href="tests.html" class="view-features-link" style="margin-left:8px;">🧪 Test Suite</a>
-        </header>
-
-        <!-- Calculator Form -->
-        <section id="calculator-form" class="card">
-            <h2>Retirement Planning Calculator</h2>
-            
-            <!-- Date Information Section -->
-            <div class="date-section">
-                <div class="section-header">
-                    <h3>Step 1: Your Age & Retirement Timeline</h3>
-                    <p class="section-description">Enter your date of birth and select your target retirement age</p>
-                </div>
-                
-                <div class="date-input-grid">
-                    <div class="date-input-box">
-                        <label for="birthDate">Date of Birth</label>
-                        <input type="date" id="birthDate" required>
-                        <p class="input-hint">Required to calculate your retirement date</p>
-                    </div>
-
-                    <div class="date-input-box">
-                        <label for="retirementAgeSelect">Target Retirement Age</label>
-                        <select id="retirementAgeSelect" class="age-select">
-                            <option value="">Select retirement age...</option>
-                            <option value="55">55 years (UK minimum)</option>
-                            <option value="60">60 years</option>
-                            <option value="65">65 years (standard UK state pension)</option>
-                            <option value="67">67 years</option>
-                            <option value="68">68 years</option>
-                            <option value="70">70 years</option>
-                        </select>
-                        <p class="input-hint">Your target retirement age</p>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Your Current Age</label>
-                    <p class="input-hint" id="currentAge">Enter your date of birth to calculate</p>
-                </div>
-
-                <div class="form-group">
-                    <label for="retirementDate">Planned Retirement Date</label>
-                    <input type="date" id="retirementDate" required>
-                    <p class="input-hint">Auto-calculated from your DOB &amp; retirement age, or override manually</p>
-                </div>
-            </div>
-
-            <div class="form-divider"></div>
-
-            <!-- Financial Information Section -->
-            <div class="financial-section">
-                <div class="section-header">
-                    <h3>Step 2: Your Pension Details</h3>
-                    <p class="section-description">Enter your current savings and expected contributions</p>
-                </div>
-                
-                <div class="form-group">
-                    <label for="currentPot">Current Pension Pot (£)</label>
-                    <input type="text" inputmode="numeric" id="currentPot" placeholder="e.g. 50,000" required>
-                    <p class="input-hint">Your current pension savings</p>
-                </div>
-
-                <div class="form-group">
-                    <label for="monthlyContribution">Monthly Contribution (£)</label>
-                    <input type="text" inputmode="numeric" id="monthlyContribution" placeholder="e.g. 500" required>
-                    <p class="input-hint">Amount you contribute each month</p>
-                </div>
-            </div>
-
-            <!-- Retirement Spending Input - Step 3 -->
-            <section id="longevityPlanning" class="financial-section" style="display: none;">
-                <div class="section-header">
-                    <h3>Step 3: Retirement Spending</h3>
-                    <p class="section-description">How much do you plan to spend annually in retirement?</p>
-                </div>
-                <div class="form-group">
-                    <label for="retirementAnnualSpending">Annual Retirement Spending (£)</label>
-                    <input type="text" inputmode="numeric" id="retirementAnnualSpending" placeholder="e.g. 40,000">
-                    <p class="spending-hint" id="spendingSuggestion">Suggested based on 4% safe withdrawal rate</p>
-                </div>
-                <button type="button" id="calculateLongevityBtn" class="btn-primary">Update Charts</button>
-            </section>
-
-            <div class="form-group">
-                <label for="investmentGrowth">Annual Investment Growth Rate</label>
-                <div class="input-suffix">
-                    <input type="number" id="investmentGrowth" min="0" max="15" step="0.1" value="5" placeholder="5">
-                    <span class="suffix-symbol">%</span>
-                </div>
-                <p class="input-hint">Default 5% based on UK historical averages. Range: 0% - 15%</p>
-            </div>
-
-            <div class="form-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="includeInflation" checked>
-                    <span>Include Inflation Adjustment</span>
-                </label>
-                <p class="input-hint">Show results in today's pounds (real values) vs future pounds (nominal values)</p>
-            </div>
-
-            <div class="form-group" id="inflationRateGroup">
-                <label for="inflationRate">Inflation Rate</label>
-                <div class="input-suffix">
-                    <input type="number" id="inflationRate" min="0" max="5" step="0.1" value="2.5" placeholder="2.5">
-                    <span class="suffix-symbol">%</span>
-                </div>
-                <p class="input-hint">Default 2.5% based on UK average. Range: 0% - 5%</p>
-            </div>
-
-            <div class="form-group">
-                <label>📊 Scenario Analysis - Compare Growth Rates:</label>
-                <p class="form-hint">See how different growth scenarios affect your retirement</p>
-                <div class="scenario-buttons">
-                    <button type="button" class="scenario-btn" id="scenarioWeakBtn" data-scenario="weak" data-rate="2">
-                        <span class="scenario-label">Weak</span>
-                        <span class="scenario-rate">2%</span>
-                    </button>
-                    <button type="button" class="scenario-btn active" id="scenarioAverageBtn" data-scenario="average" data-rate="5">
-                        <span class="scenario-label">Average</span>
-                        <span class="scenario-rate">5%</span>
-                    </button>
-                    <button type="button" class="scenario-btn" id="scenarioStrongBtn" data-scenario="strong" data-rate="8">
-                        <span class="scenario-label">Strong</span>
-                        <span class="scenario-rate">8%</span>
-                    </button>
-                </div>
-                <p class="form-hint">Selected scenario overrides the investment growth rate above</p>
-            </div>
-
-            <button id="calculateBtn" class="btn-primary">Calculate My Pension</button>
         </section>
 
-        <!-- Results Display -->
-        <section id="results" class="card" style="display: none;">
-            <h2>Your Retirement Projection</h2>
-            
-            <div class="inflation-badge" id="inflationBadge" style="display: none;">
-                📉 Inflation Adjustment Included (Real values shown)
+        <!-- ── What You Can Do ──────────────────────────────── -->
+        <h2 class="capabilities-heading">What You Can Do</h2>
+        <section class="capabilities">
+            <div class="capability-card">
+                <span class="capability-icon">🎯</span>
+                <h3>Pension Projection</h3>
+                <p>See exactly what your pension pot could be worth at retirement, factoring in your current savings, monthly contributions and compound investment growth.</p>
+                <ul>
+                    <li>Current pot + monthly contributions</li>
+                    <li>Compound growth at your chosen rate</li>
+                    <li>Year-by-year breakdown</li>
+                </ul>
             </div>
 
-            <p class="results-info">Based on <span id="resultsGrowthRate">5%</span> annual investment growth</p>
-            
-            <div class="results-grid">
-                <div class="result-card highlight">
-                    <h3>🎯 Projected Pot at Retirement</h3>
-                    <p class="big-number" id="projectedPot">£0</p>
-                    <p class="sub-text" id="projectedPotReal" style="display: none;">Real value (today's pounds)</p>
-                    <p class="sub-text" id="projectedPotNominal" style="display: none;">Nominal value (future pounds)</p>
-                    <p class="sub-text">Based on <span id="cardGrowthRate">5%</span> annual growth</p>
-                </div>
-
-                <div class="result-card">
-                    <h3>💵 Tax-Free Lump Sum</h3>
-                    <p class="big-number" id="taxFreeLump">£0</p>
-                    <p class="sub-text">25% of your pot (UK rules)</p>
-                </div>
-
-                <div class="result-card">
-                    <h3>📊 Annual Income</h3>
-                    <p class="big-number" id="annualIncome">£0</p>
-                    <p class="sub-text">Monthly: <span id="monthlyIncome">£0</span></p>
-                    <p class="sub-text" id="incomeAlternative" style="display: none;"></p>
-                    <p class="sub-text-small">Based on 4% safe withdrawal</p>
-                </div>
-
-                <div class="result-card">
-                    <h3>💰 Total Contributions</h3>
-                    <p class="big-number" id="totalContributions">£0</p>
-                    <p class="sub-text">Initial pot + monthly contributions</p>
-                </div>
-
-                <div class="result-card">
-                    <h3>📈 Investment Growth</h3>
-                    <p class="big-number" id="growthAmount">£0</p>
-                    <p class="sub-text" id="growthPercentage">0% of final pot</p>
-                </div>
-
-                <div class="result-card">
-                    <h3>⏱️ Time Horizon</h3>
-                    <p class="big-number" id="yearsToRetirement">0</p>
-                    <p class="sub-text">Years until retirement</p>
-                </div>
+            <div class="capability-card">
+                <span class="capability-icon">📈</span>
+                <h3>Scenario Analysis</h3>
+                <p>Compare three investment growth scenarios side-by-side so you can plan for the best case, the worst case, and everything in between.</p>
+                <ul>
+                    <li>Weak (2%), Average (5%), Strong (8%)</li>
+                    <li>Side-by-side pot & income comparison</li>
+                    <li>Percentage difference from base case</li>
+                </ul>
             </div>
 
-            <div id="scenarioComparison" style="display: none;">
-                <h3>📊 Scenario Analysis Comparison</h3>
-                <p class="form-hint">Comparison based on different investment growth assumptions:</p>
-                
-                <div class="scenario-results-grid">
-                    <div class="scenario-result-card">
-                        <h4>🔴 Weak Returns</h4>
-                        <p class="scenario-label">2% Annual Growth</p>
-                        <div class="scenario-value">
-                            <p><strong>Projected Pot:</strong> <span id="scenarioWeakPot">£0</span></p>
-                            <p><strong>Annual Income:</strong> <span id="scenarioWeakIncome">£0</span></p>
-                        </div>
-                        <p class="scenario-diff" id="scenarioWeakDiff"></p>
-                    </div>
-
-                    <div class="scenario-result-card highlight">
-                        <h4>🟢 Average Returns (Base Case)</h4>
-                        <p class="scenario-label">5% Annual Growth</p>
-                        <div class="scenario-value">
-                            <p><strong>Projected Pot:</strong> <span id="scenarioAveragePot">£0</span></p>
-                            <p><strong>Annual Income:</strong> <span id="scenarioAverageIncome">£0</span></p>
-                        </div>
-                    </div>
-
-                    <div class="scenario-result-card">
-                        <h4>🟡 Strong Returns</h4>
-                        <p class="scenario-label">8% Annual Growth</p>
-                        <div class="scenario-value">
-                            <p><strong>Projected Pot:</strong> <span id="scenarioStrongPot">£0</span></p>
-                            <p><strong>Annual Income:</strong> <span id="scenarioStrongIncome">£0</span></p>
-                        </div>
-                        <p class="scenario-diff" id="scenarioStrongDiff"></p>
-                    </div>
-                </div>
+            <div class="capability-card">
+                <span class="capability-icon">💷</span>
+                <h3>Retirement Income</h3>
+                <p>Calculate your tax-free lump sum, annual drawdown income and monthly income using the UK 25% tax-free allowance and 4% safe withdrawal rate.</p>
+                <ul>
+                    <li>25% tax-free lump sum (capped at £268,275)</li>
+                    <li>Annual & monthly income estimates</li>
+                    <li>4% safe withdrawal rate</li>
+                </ul>
             </div>
 
-            <div class="chart-container" id="lifecycleChartContainer" style="min-height: 450px; position: relative; display: none;">
-                <h3 id="mainChartTitle">Your Financial Lifecycle</h3>
-                <p class="chart-hint" id="mainChartHint">Your complete financial journey from today through retirement to age 100</p>
-                <canvas id="growthChart"></canvas>
-                <div id="lifecycleNarrative" class="chart-narrative" style="display: none;"></div>
+            <div class="capability-card">
+                <span class="capability-icon">📉</span>
+                <h3>Inflation Adjustment</h3>
+                <p>See your projections in today's money or future money. Toggle inflation on or off and set a custom rate to understand the real purchasing power of your savings.</p>
+                <ul>
+                    <li>Real vs nominal value comparison</li>
+                    <li>Configurable inflation rate (0–5%)</li>
+                    <li>Today's-pounds purchasing power</li>
+                </ul>
             </div>
 
-            <div class="chart-container" id="cashFlowChartContainer" style="min-height: 450px; position: relative; display: none;">
-                <h3>Retirement Cash Flow</h3>
-                <p class="chart-hint">Annual spending from retirement to age 100 across all 3 growth scenarios — solid bars = funded by your pot, faded bars = shortfall</p>
-                <canvas id="cashFlowChart"></canvas>
+            <div class="capability-card">
+                <span class="capability-icon">🏦</span>
+                <h3>Spending Plan & Longevity</h3>
+                <p>Enter your planned annual retirement spending and see whether your money lasts to age 100 — or discover the maximum you can sustainably spend each year.</p>
+                <ul>
+                    <li>Mode A: Set spending, check longevity</li>
+                    <li>Mode B: Find max sustainable spend</li>
+                    <li>Shortfall warnings by age</li>
+                </ul>
             </div>
 
-                <!-- Milestone Timeline -->
-                <div id="milestoneTimeline" style="display: none;" class="milestone-container">
-                    <h4>Your Retirement Timeline</h4>
-                    <div class="milestone-visual">
-                        <div class="milestone milestone-start">
-                            <div class="milestone-marker"></div>
-                            <div class="milestone-label">
-                                <p class="milestone-age" id="milestoneRetirementAge">Age 65</p>
-                                <p class="milestone-title">Retirement</p>
-                                <p class="milestone-detail" id="milestoneRetirementDate">2036</p>
-                            </div>
-                        </div>
-                        
-                        <div class="milestone-line"></div>
-                        
-                        <div class="milestone milestone-end">
-                            <div class="milestone-marker"></div>
-                            <div class="milestone-label">
-                                <p class="milestone-age">Age 100</p>
-                                <p class="milestone-title">Longevity Target</p>
-                                <p class="milestone-detail">35 Years</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Longevity Summary -->
-                <div id="longevitySummary" style="display: none;" class="longevity-summary">
-                    <div class="summary-grid-longevity">
-                        <div class="summary-item-longevity">
-                            <p class="summary-label">Retirement Pot</p>
-                            <p class="summary-value" id="longevityStartPot">£0</p>
-                        </div>
-                        <div class="summary-item-longevity">
-                            <p class="summary-label">Annual Spending</p>
-                            <p class="summary-value" id="longevityAnnualSpending">£0</p>
-                        </div>
-                        <div class="summary-item-longevity">
-                            <p class="summary-label">Years Planned</p>
-                            <p class="summary-value" id="longevityYears">35</p>
-                        </div>
-                        <div class="summary-item-longevity">
-                            <p class="summary-label">Balance at 100</p>
-                            <p class="summary-value" id="longevityFinalBalance">£0</p>
-                        </div>
-                        <div class="summary-item-longevity status-success">
-                            <p class="summary-label">Status</p>
-                            <p class="summary-value" id="longevityStatus">Money Lasts</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <button id="recalculateBtn" class="btn-secondary">Recalculate</button>
+            <div class="capability-card">
+                <span class="capability-icon">📊</span>
+                <h3>Interactive Charts</h3>
+                <p>Visualise your entire financial lifecycle — from today through retirement to age 100 — with interactive Chart.js graphs that update in real time.</p>
+                <ul>
+                    <li>Lifecycle growth chart (accumulation → drawdown)</li>
+                    <li>Cash-flow chart with funded vs shortfall bars</li>
+                    <li>Stacking-bands for all three scenarios</li>
+                </ul>
+            </div>
         </section>
 
-        <!-- Retirement Spending Analysis -->
-        <section id="retirementSpending" class="card" style="display: none;">
-            <h2>Retirement Spending Analysis</h2>
-            <p class="form-hint">Plan how long your retirement savings will last and test different spending scenarios</p>
-
-            <div class="spending-mode-selector">
-                <label class="radio-label">
-                    <input type="radio" name="spendingMode" value="mode-a" checked>
-                    <span>📊 Mode A: Spending Plan</span>
-                </label>
-                <p class="form-hint">Enter your planned annual spending and see if your money lasts</p>
-                
-                <label class="radio-label">
-                    <input type="radio" name="spendingMode" value="mode-b">
-                    <span>📈 Mode B: Maximum Sustainable Spending</span>
-                </label>
-                <p class="form-hint">Discover the maximum you can safely spend each year</p>
-            </div>
-
-            <div id="modeAInputs" class="mode-inputs">
-                <div class="form-group">
-                    <label for="annualSpending">💷 Annual Spending Amount (£):</label>
-                    <input type="text" inputmode="numeric" id="annualSpending" placeholder="e.g. 30,000" value="30,000">
-                    <p class="form-hint">How much do you plan to spend each year in retirement?</p>
+        <!-- ── How It Works ─────────────────────────────────── -->
+        <section class="steps-section">
+            <h2>How It Works</h2>
+            <div class="steps-grid">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Enter Your Details</h3>
+                    <p>Date of birth, target retirement age, current pension pot and monthly contributions.</p>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label for="lifeExpectancy">🎂 Life Expectancy (years):</label>
-                <input type="number" id="lifeExpectancy" min="60" max="120" value="100" placeholder="100">
-                <p class="form-hint">Age to plan for - conservative estimate recommended (60-120)</p>
-            </div>
-
-            <button id="analyzeSpendingBtn" class="btn-primary">Analyze Spending Plan</button>
-
-            <div id="spendingResults" style="display: none; margin-top: 30px;">
-                <div id="spendingStatus" class="spending-status-card"></div>
-                
-                <div class="spending-summary">
-                    <h3>Retirement Summary</h3>
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <p class="summary-label">Starting Pot</p>
-                            <p class="summary-value" id="summaryStartingPot">£0</p>
-                        </div>
-                        <div class="summary-item">
-                            <p class="summary-label">Annual Spending</p>
-                            <p class="summary-value" id="summaryAnnualSpending">£0</p>
-                        </div>
-                        <div class="summary-item">
-                            <p class="summary-label">Retirement Duration</p>
-                            <p class="summary-value" id="summaryRetirementYears">0 years</p>
-                        </div>
-                        <div class="summary-item">
-                            <p class="summary-label">Total Spent</p>
-                            <p class="summary-value" id="summaryTotalSpent">£0</p>
-                        </div>
-                        <div class="summary-item">
-                            <p class="summary-label">Final Balance</p>
-                            <p class="summary-value" id="summaryFinalBalance">£0</p>
-                        </div>
-                        <div class="summary-item" id="summaryMoneyRunsOutContainer" style="display: none;">
-                            <p class="summary-label">⚠️ Money Runs Out</p>
-                            <p class="summary-value" id="summaryMoneyRunsOut">Age 85</p>
-                        </div>
-                    </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Choose Assumptions</h3>
+                    <p>Pick a growth scenario (Weak / Average / Strong), set inflation, compare outcomes.</p>
                 </div>
-
-                <div class="chart-container">
-                    <h3>Spending Analysis Detail (Optional)</h3>
-                    <p class="chart-hint">Detailed breakdown of annual spending and remaining pot - also visible in the main lifecycle chart above</p>
-                    <canvas id="spendingChart"></canvas>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>View Projections</h3>
+                    <p>See your projected pot, tax-free lump sum, annual income and interactive charts instantly.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Plan Spending</h3>
+                    <p>Test annual spending amounts and check whether your savings last to age 100.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Button to toggle retirement spending analysis -->
-        <section id="spendingToggle" class="card" style="display: none; margin-top: 20px; text-align: center;">
-            <button id="toggleSpendingAnalysisBtn" class="btn-secondary">💰 Analyze Retirement Spending Plan</button>
+        <!-- ── UK Pension Rules ─────────────────────────────── -->
+        <div class="uk-rules">
+            <h3>🇬🇧 Built for UK Pension Rules</h3>
+            <ul>
+                <li>Minimum pension access age: 55</li>
+                <li>25% tax-free lump sum allowance</li>
+                <li>£268,275 maximum tax-free cap</li>
+                <li>State pension age: 66–68</li>
+                <li>4% safe withdrawal rate guidance</li>
+                <li>2.5% default UK inflation rate</li>
+            </ul>
+        </div>
+
+        <!-- ── Site Pages ───────────────────────────────────── -->
+        <div class="page-links">
+            <a href="calculator.html" class="page-link-card">
+                <span class="page-link-icon">🧮</span>
+                <div class="page-link-text">
+                    <h3>Retirement Calculator</h3>
+                    <p>The main calculator — enter your details, run projections, view charts and plan retirement spending.</p>
+                </div>
+            </a>
+            <a href="functionality.html" class="page-link-card">
+                <span class="page-link-icon">📋</span>
+                <div class="page-link-text">
+                    <h3>Feature Roadmap</h3>
+                    <p>Full list of implemented and planned features tracked as user stories with completion status.</p>
+                </div>
+            </a>
+            <a href="tests.html" class="page-link-card">
+                <span class="page-link-icon">🧪</span>
+                <div class="page-link-text">
+                    <h3>Test Suite</h3>
+                    <p>94 automated tests across 6 suites — view documentation and run them live in the browser.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- ── Quality & Tech ───────────────────────────────── -->
+        <section class="card" style="margin-bottom: 32px;">
+            <h2>Quality & Technology</h2>
+            <div class="quality-grid">
+                <div class="quality-card">
+                    <h4>📐 Enterprise Architecture</h4>
+                    <p>Modular code split across config, calculators, utilities, charts and validation — no monolith, every function single-responsibility.</p>
+                </div>
+                <div class="quality-card">
+                    <h4>🧪 94 Automated Tests</h4>
+                    <p>Full Jest test suite covering pension projection, income, inflation, drawdown, spending plans and utility functions — all verifiable from the browser.</p>
+                </div>
+                <div class="quality-card">
+                    <h4>📱 Responsive Design</h4>
+                    <p>Works on desktop, tablet and mobile. Professional form layout adapts cleanly to all screen sizes.</p>
+                </div>
+                <div class="quality-card">
+                    <h4>🔒 Privacy First</h4>
+                    <p>Everything runs in your browser. No data is sent to any server, no accounts, no tracking, no cookies.</p>
+                </div>
+                <div class="quality-card">
+                    <h4>⚡ Zero Dependencies</h4>
+                    <p>Vanilla HTML, CSS and JavaScript — only external library is Chart.js for graphs. No framework, no bundler, instant load.</p>
+                </div>
+                <div class="quality-card">
+                    <h4>🇬🇧 UK-Focused</h4>
+                    <p>All rules, defaults and calculations based on current UK pension regulations and HMRC guidance.</p>
+                </div>
+            </div>
         </section>
 
-        <footer>
-            <p><strong>NestMapOS</strong> - Professional Pension & Retirement Planning Tool</p>
-            <p>⚠️ This calculator provides estimates only. Please consult a qualified financial advisor for personalized advice.</p>
-            <p class="small">© 2026 NestMapOS. All rights reserved. Based on UK pension regulations as of 2025.</p>
-        </footer>
+        <!-- ── Disclaimer ───────────────────────────────────── -->
+        <div class="disclaimer">
+            <span class="disclaimer-icon">⚠️</span>
+            <p><strong>Important:</strong> NestMapOS provides estimates for educational and planning purposes only. Projections are based on hypothetical growth rates and do not guarantee future returns. Please consult a qualified independent financial advisor before making any pension or retirement decisions.</p>
+        </div>
+
+        <!-- ── Footer ───────────────────────────────────────── -->
+        <div class="home-footer">
+            <p><strong>NestMapOS</strong> — Professional Pension & Retirement Planning</p>
+            <p>
+                <a href="calculator.html">Calculator</a> · 
+                <a href="functionality.html">Features</a> · 
+                <a href="tests.html">Test Suite</a>
+            </p>
+            <p>© 2026 NestMapOS. All rights reserved. Based on UK pension regulations as of 2025.</p>
+        </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Configuration -->
-    <script src="config.js"></script>
-
-    <!-- Utility modules -->
-    <script src="utils/formatting.js"></script>
-    <script src="utils/date-utils.js"></script>
-    <script src="utils/drawdown.js"></script>
-    <script src="utils/form-helpers.js"></script>
-
-    <!-- Calculators -->
-    <script src="calculators/pension-projection.js"></script>
-    <script src="calculators/income-projection.js"></script>
-    <script src="calculators/inflation-calculator.js"></script>
-    <script src="calculators/retirement-income.js"></script>
-
-    <!-- Validation -->
-    <script src="validation/input-validator.js"></script>
-
-    <!-- Chart builders -->
-    <script src="charts/retirement-projection-chart.js"></script>
-    <script src="charts/lifecycle-chart-builder.js"></script>
-    <script src="charts/cash-flow-chart-builder.js"></script>
-
-    <!-- Application orchestrator (must load last) -->
-    <script src="app.js"></script>
 </body>
 </html>

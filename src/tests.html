@@ -221,6 +221,183 @@
             border-color: #667eea;
         }
 
+        /* ── Live Test Runner ──────────────────────────────── */
+        .runner-panel {
+            background: #1a1a2e;
+            border-radius: 12px;
+            margin: 28px 0;
+            overflow: hidden;
+            border: 2px solid #2a2a4e;
+        }
+        .runner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            background: linear-gradient(135deg, #0f0f23, #1a1a2e);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .runner-header h3 {
+            color: #e0e0e0;
+            margin: 0;
+            font-size: 1.1em;
+        }
+        .runner-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .btn-run-tests {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            font-weight: 700;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.3px;
+        }
+        .btn-run-tests:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(40,167,69,0.4);
+        }
+        .btn-run-tests:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-run-tests.running {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            animation: pulse-btn 1.2s infinite;
+        }
+        @keyframes pulse-btn {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .runner-stats-bar {
+            display: flex;
+            gap: 24px;
+            padding: 12px 24px;
+            background: #0f0f23;
+            border-bottom: 1px solid #2a2a4e;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.88em;
+        }
+        .runner-stat {
+            color: #888;
+        }
+        .runner-stat .num { font-weight: 700; }
+        .runner-stat.pass .num { color: #28a745; }
+        .runner-stat.fail .num { color: #dc3545; }
+        .runner-stat.total .num { color: #667eea; }
+        .runner-stat.time .num { color: #f59e0b; }
+
+        .runner-progress {
+            height: 4px;
+            background: #2a2a4e;
+            position: relative;
+            overflow: hidden;
+        }
+        .runner-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.15s;
+        }
+        .runner-progress-bar.has-failures {
+            background: linear-gradient(90deg, #28a745, #dc3545);
+        }
+
+        .runner-output {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #0f0f23;
+        }
+        .runner-output.expanded {
+            max-height: 2000px;
+            overflow-y: auto;
+        }
+        .runner-log {
+            padding: 16px 24px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.82em;
+            line-height: 1.6;
+            color: #ccc;
+        }
+        .log-suite {
+            color: #667eea;
+            font-weight: 700;
+            margin-top: 8px;
+            padding: 4px 0;
+        }
+        .log-pass {
+            color: #28a745;
+        }
+        .log-pass::before {
+            content: '  ✓ ';
+            color: #28a745;
+        }
+        .log-fail {
+            color: #dc3545;
+        }
+        .log-fail::before {
+            content: '  ✗ ';
+            color: #dc3545;
+        }
+        .log-error {
+            color: #f59e0b;
+            padding-left: 28px;
+            font-size: 0.92em;
+        }
+        .log-summary {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #2a2a4e;
+            color: #e0e0e0;
+            font-weight: 700;
+        }
+        .toggle-output-btn {
+            padding: 6px 14px;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background: transparent;
+            cursor: pointer;
+            font-size: 0.82em;
+            color: #aaa;
+            transition: all 0.15s;
+        }
+        .toggle-output-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        /* Test row live status indicators */
+        .test-row[data-status="pass"] {
+            border-left: 3px solid #28a745;
+        }
+        .test-row[data-status="fail"] {
+            border-left: 3px solid #dc3545;
+            background: #fff5f5;
+        }
+        .test-row[data-status="fail"] .test-icon {
+            color: #dc3545;
+        }
+        .test-error-inline {
+            font-size: 0.8em;
+            color: #dc3545;
+            background: #fff0f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
         @media (max-width: 768px) {
             .test-stats {
                 grid-template-columns: repeat(2, 1fr);
@@ -229,6 +406,10 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 8px;
+            }
+            .runner-stats-bar {
+                flex-wrap: wrap;
+                gap: 12px;
             }
         }
     </style>
@@ -247,7 +428,8 @@
 
         <!-- Navigation -->
         <nav class="nav-links" style="display:flex;gap:12px;justify-content:center;margin:12px 0;">
-            <a href="index.html" class="nav-link" style="color:#667eea;text-decoration:none;font-weight:600;">← Calculator</a>
+            <a href="index.html" class="nav-link" style="color:#667eea;text-decoration:none;font-weight:600;">🏠 Home</a>
+            <a href="calculator.html" class="nav-link" style="color:#667eea;text-decoration:none;font-weight:600;">🧮 Calculator</a>
             <a href="functionality.html" class="nav-link" style="color:#667eea;text-decoration:none;font-weight:600;">📋 Features</a>
         </nav>
 
@@ -287,6 +469,31 @@
         <div class="expand-controls">
             <button class="expand-btn" onclick="toggleAll(false)">▼ Expand All</button>
             <button class="expand-btn" onclick="toggleAll(true)">▲ Collapse All</button>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!--  LIVE TEST RUNNER PANEL                            -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div class="runner-panel">
+            <div class="runner-header">
+                <h3>🖥️ Live Test Runner</h3>
+                <div class="runner-controls">
+                    <button class="toggle-output-btn" id="toggleOutputBtn" onclick="toggleRunnerOutput()" style="display:none;">Show Output</button>
+                    <button class="btn-run-tests" id="runTestsBtn" onclick="runBrowserTests()">▶ Run All Tests</button>
+                </div>
+            </div>
+            <div class="runner-progress" id="runnerProgress" style="display:none;">
+                <div class="runner-progress-bar" id="runnerProgressBar"></div>
+            </div>
+            <div class="runner-stats-bar" id="runnerStatsBar" style="display:none;">
+                <span class="runner-stat total">Total: <span class="num" id="rTotal">0</span></span>
+                <span class="runner-stat pass">Passed: <span class="num" id="rPassed">0</span></span>
+                <span class="runner-stat fail">Failed: <span class="num" id="rFailed">0</span></span>
+                <span class="runner-stat time">Time: <span class="num" id="rTime">—</span></span>
+            </div>
+            <div class="runner-output" id="runnerOutput">
+                <div class="runner-log" id="runnerLog"></div>
+            </div>
         </div>
 
         <!-- ════════════════════════════════════════════════════════ -->
@@ -1325,12 +1532,27 @@
 
         <footer>
             <p><strong>NestMapOS</strong> — Test Suite Documentation</p>
-            <p>Tests run via <code style="background:#e8ecf1;padding:2px 6px;border-radius:3px;">npm test</code> using Jest with jsdom environment</p>
+            <p>Tests run via <code style="background:#e8ecf1;padding:2px 6px;border-radius:3px;">npm test</code> (Jest) or the ▶ Run All Tests button above (browser)</p>
             <p class="small">© 2026 NestMapOS. All rights reserved.</p>
         </footer>
     </div>
 
+    <!-- Source modules (needed by browser tests) -->
+    <script src="config.js"></script>
+    <script src="utils/formatting.js"></script>
+    <script src="utils/date-utils.js"></script>
+    <script src="utils/drawdown.js"></script>
+    <script src="calculators/pension-projection.js"></script>
+    <script src="calculators/income-projection.js"></script>
+    <script src="calculators/inflation-calculator.js"></script>
+    <script src="calculators/retirement-income.js"></script>
+
+    <!-- Browser test framework + tests -->
+    <script src="test-runner/browser-test-runner.js"></script>
+    <script src="test-runner/browser-tests.js"></script>
+
     <script>
+        // ── Documentation toggle ─────────────────────────────
         function toggleSuite(header) {
             const section = header.closest('.suite-section');
             section.classList.toggle('collapsed');
@@ -1344,6 +1566,164 @@
                     section.classList.remove('collapsed');
                 }
             });
+        }
+
+        // ── Runner output toggle ─────────────────────────────
+        function toggleRunnerOutput() {
+            const output = document.getElementById('runnerOutput');
+            const btn = document.getElementById('toggleOutputBtn');
+            output.classList.toggle('expanded');
+            btn.textContent = output.classList.contains('expanded') ? 'Hide Output' : 'Show Output';
+        }
+
+        // ── Build test-name → DOM-row index ──────────────────
+        // Maps each test name to the corresponding .test-row element
+        function buildTestRowMap() {
+            const map = {};
+            document.querySelectorAll('.test-row').forEach(row => {
+                const nameEl = row.querySelector('.test-name');
+                if (nameEl) {
+                    map[nameEl.textContent.trim()] = row;
+                }
+            });
+            return map;
+        }
+
+        // ── Run browser tests ────────────────────────────────
+        function runBrowserTests() {
+            const btn = document.getElementById('runTestsBtn');
+            const statsBar = document.getElementById('runnerStatsBar');
+            const progress = document.getElementById('runnerProgress');
+            const progressBar = document.getElementById('runnerProgressBar');
+            const logEl = document.getElementById('runnerLog');
+            const outputEl = document.getElementById('runnerOutput');
+            const toggleBtn = document.getElementById('toggleOutputBtn');
+
+            // Reset UI
+            btn.disabled = true;
+            btn.classList.add('running');
+            btn.textContent = '⏳ Running...';
+            statsBar.style.display = 'flex';
+            progress.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressBar.classList.remove('has-failures');
+            logEl.innerHTML = '';
+            toggleBtn.style.display = 'inline-block';
+
+            // Reset all test-row indicators
+            document.querySelectorAll('.test-row').forEach(row => {
+                row.removeAttribute('data-status');
+                const iconEl = row.querySelector('.test-icon');
+                if (iconEl) iconEl.textContent = '✅';
+                const existing = row.querySelector('.test-error-inline');
+                if (existing) existing.remove();
+            });
+
+            const testRowMap = buildTestRowMap();
+            const totalTests = 94; // known count
+            let runCount = 0;
+
+            // Re-register tests (runner was populated on script load)
+            // Tests are already registered, just run them
+
+            // Live callbacks
+            BrowserTestRunner.onTestComplete = (t, suitePath, suite) => {
+                runCount++;
+                const pct = Math.round((runCount / totalTests) * 100);
+                progressBar.style.width = pct + '%';
+
+                // Update stats bar
+                document.getElementById('rTotal').textContent = runCount;
+                document.getElementById('rPassed').textContent = BrowserTestRunner.results.passed;
+                document.getElementById('rFailed').textContent = BrowserTestRunner.results.failed;
+
+                if (!t.passed) {
+                    progressBar.classList.add('has-failures');
+                }
+
+                // Append to log
+                const line = document.createElement('div');
+                line.className = t.passed ? 'log-pass' : 'log-fail';
+                line.textContent = t.name;
+                logEl.appendChild(line);
+
+                if (!t.passed && t.error) {
+                    const errLine = document.createElement('div');
+                    errLine.className = 'log-error';
+                    errLine.textContent = t.error;
+                    logEl.appendChild(errLine);
+                }
+
+                // Light up the documentation row
+                const row = testRowMap[t.name];
+                if (row) {
+                    row.setAttribute('data-status', t.passed ? 'pass' : 'fail');
+                    const iconEl = row.querySelector('.test-icon');
+                    if (iconEl) iconEl.textContent = t.passed ? '✅' : '❌';
+                    if (!t.passed && t.error) {
+                        const errDiv = document.createElement('div');
+                        errDiv.className = 'test-error-inline';
+                        errDiv.textContent = '⚠ ' + t.error;
+                        row.querySelector('.test-detail').appendChild(errDiv);
+                    }
+                }
+            };
+
+            BrowserTestRunner.onSuiteComplete = (suite, path) => {
+                // Only log top-level or immediate children
+                if (path.split(' > ').length <= 2) {
+                    const sLine = document.createElement('div');
+                    sLine.className = 'log-suite';
+                    sLine.textContent = (suite.failed === 0 ? '✅ ' : '❌ ') + path + ` (${suite.passed + suite.failed} tests)`;
+                    logEl.appendChild(sLine);
+                }
+            };
+
+            // Run with a tiny delay so the UI updates before execution
+            setTimeout(() => {
+                const results = BrowserTestRunner.runAll();
+
+                // Final stats
+                document.getElementById('rTotal').textContent = results.total;
+                document.getElementById('rPassed').textContent = results.passed;
+                document.getElementById('rFailed').textContent = results.failed;
+                document.getElementById('rTime').textContent = results.duration + 'ms';
+                progressBar.style.width = '100%';
+
+                // Summary line
+                const summary = document.createElement('div');
+                summary.className = 'log-summary';
+                if (results.failed === 0) {
+                    summary.textContent = `✅ All ${results.total} tests passed in ${results.duration}ms`;
+                    summary.style.color = '#28a745';
+                } else {
+                    summary.textContent = `❌ ${results.failed} of ${results.total} tests failed in ${results.duration}ms`;
+                    summary.style.color = '#dc3545';
+                }
+                logEl.appendChild(summary);
+
+                // Auto-expand output
+                outputEl.classList.add('expanded');
+                toggleBtn.textContent = 'Hide Output';
+
+                // Update the documentation header stats
+                const statCards = document.querySelectorAll('.stat-card');
+                if (statCards.length >= 3) {
+                    statCards[0].querySelector('.stat-number').textContent = results.total;
+                    statCards[2].querySelector('.stat-number').textContent = results.failed;
+                }
+
+                // Update header slogan
+                const slogan = document.querySelector('.slogan-subtext');
+                if (slogan) {
+                    slogan.textContent = `${results.total} Tests · ${results.suites.length} Suites · ${results.failed === 0 ? '100%' : Math.round(results.passed / results.total * 100) + '%'} Pass Rate`;
+                }
+
+                // Reset button
+                btn.disabled = false;
+                btn.classList.remove('running');
+                btn.textContent = '▶ Run All Tests';
+            }, 50);
         }
     </script>
 </body>
