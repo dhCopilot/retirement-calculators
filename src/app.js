@@ -28,6 +28,9 @@ if (TEST_MODE) {
 // ── Application State ────────────────────────────────────────────
 let selectedScenarioRate = APP_CONFIG.DEFAULT_GROWTH_RATE;
 
+/** Dynamically calculated life expectancy (defaults to TARGET_AGE) */
+let currentLifeExpectancy = APP_CONFIG.TARGET_AGE;
+
 /** Shared projection data consumed by lifecycle chart builder */
 let growthProjectionData = {
     weak: null, average: null, strong: null,
@@ -56,8 +59,86 @@ function autoCalculateRetirementDate() {
     getElement('retirementDate').value = `${yyyy}-${mm}-${dd}`;
 }
 
-// Wire up DOB → current age display + auto retirement date
+/**
+ * Get the currently selected life expectancy mode.
+ * @returns {'ons'|'default'|'manual'}
+ */
+function getLifeExpectancyMode() {
+    const selected = document.querySelector('input[name="lifeExpectancyMode"]:checked');
+    return selected ? selected.value : 'ons';
+}
+
+/**
+ * Recalculate and display life expectancy based on current form inputs and selected mode.
+ * Updates the global `currentLifeExpectancy` used by all calculations.
+ */
+function updateLifeExpectancy() {
+    const mode = getLifeExpectancyMode();
+    const leValue = getElement('lifeExpectancyValue');
+    const leSource = getElement('lifeExpectancySource');
+    const leResult = getElement('lifeExpectancyResult');
+    const manualInput = getElement('manualAgeInput');
+
+    // Show/hide manual age input
+    if (manualInput) manualInput.style.display = mode === 'manual' ? 'block' : 'none';
+
+    if (mode === 'default') {
+        // Fixed at 100
+        currentLifeExpectancy = APP_CONFIG.TARGET_AGE;
+        if (leValue) leValue.innerHTML = `Planning to age <strong>${APP_CONFIG.TARGET_AGE}</strong>`;
+        if (leSource) leSource.textContent = 'Standard planning horizon';
+        if (leResult) leResult.style.display = 'block';
+        return;
+    }
+
+    if (mode === 'manual') {
+        const manualAge = parseInt(getElement('manualTargetAge')?.value) || 90;
+        currentLifeExpectancy = Math.max(60, Math.min(120, manualAge));
+        if (leValue) leValue.innerHTML = `Planning to age <strong>${currentLifeExpectancy}</strong>`;
+        if (leSource) leSource.textContent = 'User-defined target age';
+        if (leResult) leResult.style.display = 'block';
+        return;
+    }
+
+    // ONS mode
+    const gender = getElement('genderSelect')?.value;
+    const postcode = getElement('postcode')?.value || '';
+    const birthDateVal = getElement('birthDate')?.value;
+
+    if (!gender || !birthDateVal) {
+        currentLifeExpectancy = APP_CONFIG.TARGET_AGE;
+        if (leValue) leValue.innerHTML = 'Select <strong>gender</strong> and <strong>date of birth</strong> for ONS estimate';
+        if (leSource) leSource.textContent = `Falling back to default (age ${APP_CONFIG.TARGET_AGE})`;
+        if (leResult) leResult.style.display = 'block';
+        return;
+    }
+
+    const currentAge = Math.floor(calculateExactAge(birthDateVal));
+    const result = calculateLifeExpectancy(gender, currentAge, postcode);
+
+    if (result.lifeExpectancy) {
+        currentLifeExpectancy = Math.ceil(result.lifeExpectancy);
+        const genderLabel = gender === 'male' ? '♂ Male' : '♀ Female';
+        if (leValue) leValue.innerHTML = `${genderLabel} — estimated life expectancy: <strong>${result.lifeExpectancy} years</strong>`;
+        if (leSource) leSource.textContent = `Source: ${result.source}`;
+    } else {
+        currentLifeExpectancy = APP_CONFIG.TARGET_AGE;
+        if (leValue) leValue.innerHTML = `Using default: <strong>age ${APP_CONFIG.TARGET_AGE}</strong>`;
+        if (leSource) leSource.textContent = 'ONS data not available for this selection';
+    }
+    if (leResult) leResult.style.display = 'block';
+}
+
+// Wire up DOB → current age display + auto retirement date + life expectancy
 getElement('retirementAgeSelect')?.addEventListener('change', autoCalculateRetirementDate);
+getElement('genderSelect')?.addEventListener('change', updateLifeExpectancy);
+getElement('postcode')?.addEventListener('blur', updateLifeExpectancy);
+
+// Life expectancy mode radios
+document.querySelectorAll('input[name="lifeExpectancyMode"]').forEach(radio => {
+    radio.addEventListener('change', updateLifeExpectancy);
+});
+getElement('manualTargetAge')?.addEventListener('input', updateLifeExpectancy);
 
 getElement('birthDate')?.addEventListener('change', function () {
     const currentAgeEl = getElement('currentAge');
@@ -68,7 +149,11 @@ getElement('birthDate')?.addEventListener('change', function () {
     const age = calculateExactAge(this.value);
     if (currentAgeEl) currentAgeEl.textContent = `You are currently ${formatAge(age)}`;
     autoCalculateRetirementDate();
+    updateLifeExpectancy();
 });
+
+// Initialise life expectancy display on load
+updateLifeExpectancy();
 
 // Scenario buttons
 document.querySelectorAll('.scenario-btn').forEach(btn => {
@@ -104,6 +189,102 @@ document.querySelectorAll('input[name="spendingMode"]').forEach(radio => {
 
 // Attach comma-formatting to currency text inputs
 attachCurrencyFormatting(['currentPot', 'monthlyContribution', 'retirementAnnualSpending', 'annualSpending']);
+
+// ── Chart Age Slider Wiring ──────────────────────────────────────
+
+/**
+ * Sync both chart age sliders and rebuild charts at the new target age.
+ * @param {number} newAge - The new target age from the slider
+ * @param {string} sourceSlider - 'lifecycle' or 'cashFlow' (which slider triggered)
+ */
+function onChartAgeSliderChange(newAge, sourceSlider) {
+    const age = Math.max(65, Math.min(110, parseInt(newAge) || 100));
+    currentLifeExpectancy = age;
+
+    // Sync both sliders + outputs
+    const lcSlider = getElement('lifecycleAgeSlider');
+    const cfSlider = getElement('cashFlowAgeSlider');
+    const lcOutput = getElement('lifecycleAgeValue');
+    const cfOutput = getElement('cashFlowAgeValue');
+    if (lcSlider) lcSlider.value = age;
+    if (cfSlider) cfSlider.value = age;
+    if (lcOutput) lcOutput.textContent = age;
+    if (cfOutput) cfOutput.textContent = age;
+
+    // Also sync the form radio to match
+    const manualRadio = document.querySelector('input[name="lifeExpectancyMode"][value="manual"]');
+    if (manualRadio) manualRadio.checked = true;
+    const manualInput = getElement('manualTargetAge');
+    if (manualInput) manualInput.value = age;
+    const manualDiv = getElement('manualAgeInput');
+    if (manualDiv) manualDiv.style.display = 'block';
+    updateLifeExpectancy();
+
+    // Rebuild charts with new target age
+    rebuildChartsAtCurrentAge();
+}
+
+/**
+ * Rebuild both charts using the current life expectancy and spending values.
+ */
+function rebuildChartsAtCurrentAge() {
+    const spendingInput = getElement('retirementAnnualSpending');
+    const spending = parseCurrencyInput(spendingInput?.value) || 0;
+    if (spending <= 0) return;
+
+    const longevityData = buildLongevityData(spending);
+    if (longevityData.length > 0) {
+        createCombinedLifecycleChart(longevityData);
+        createCashFlowChart(spending);
+    }
+}
+
+/**
+ * Sync chart sliders to the current life expectancy value.
+ */
+function syncChartSlidersToLifeExpectancy() {
+    const age = currentLifeExpectancy;
+    const lcSlider = getElement('lifecycleAgeSlider');
+    const cfSlider = getElement('cashFlowAgeSlider');
+    const lcOutput = getElement('lifecycleAgeValue');
+    const cfOutput = getElement('cashFlowAgeValue');
+    if (lcSlider) lcSlider.value = age;
+    if (cfSlider) cfSlider.value = age;
+    if (lcOutput) lcOutput.textContent = age;
+    if (cfOutput) cfOutput.textContent = age;
+}
+
+// Lifecycle chart slider
+getElement('lifecycleAgeSlider')?.addEventListener('input', function () {
+    getElement('lifecycleAgeValue').textContent = this.value;
+    getElement('cashFlowAgeSlider').value = this.value;
+    getElement('cashFlowAgeValue').textContent = this.value;
+});
+getElement('lifecycleAgeSlider')?.addEventListener('change', function () {
+    onChartAgeSliderChange(this.value, 'lifecycle');
+});
+
+// Cash flow chart slider
+getElement('cashFlowAgeSlider')?.addEventListener('input', function () {
+    getElement('cashFlowAgeValue').textContent = this.value;
+    getElement('lifecycleAgeSlider').value = this.value;
+    getElement('lifecycleAgeValue').textContent = this.value;
+});
+getElement('cashFlowAgeSlider')?.addEventListener('change', function () {
+    onChartAgeSliderChange(this.value, 'cashFlow');
+});
+
+// Reset buttons — snap back to life expectancy value
+getElement('lifecycleAgeReset')?.addEventListener('click', function () {
+    updateLifeExpectancy();
+    syncChartSlidersToLifeExpectancy();
+    rebuildChartsAtCurrentAge();
+});
+getElement('cashFlowAgeReset')?.addEventListener('click', function () {
+    updateLifeExpectancy();
+    syncChartSlidersToLifeExpectancy();
+    rebuildChartsAtCurrentAge();
+});
 
 // ══════════════════════════════════════════════════════════════════
 //  MAIN CALCULATION FLOW
@@ -207,6 +388,7 @@ function calculateRetirement() {
         const initialLongevityData = buildLongevityData(currentSpending);
         createCombinedLifecycleChart(initialLongevityData);
         createCashFlowChart(currentSpending);
+        syncChartSlidersToLifeExpectancy();
 
         // Format the spending input with commas
         if (spendingInput.value) {
@@ -347,7 +529,7 @@ function displaySpendingResults(result, pot, yearsUntilRetirement, lifeExpectanc
 function buildLongevityData(annualSpending) {
     const inputs = readFormInputs();
     const investmentGrowth = selectedScenarioRate / 100;
-    const targetAge = APP_CONFIG.TARGET_AGE;
+    const targetAge = currentLifeExpectancy;
 
     if (!inputs.retirementDate || !inputs.birthDate) return [];
 
@@ -380,7 +562,7 @@ function calculateLongevityPlan() {
         const inputs = readFormInputs();
         const annualSpending = readCurrencyInput('retirementAnnualSpending');
         const investmentGrowth = selectedScenarioRate / 100;
-        const targetAge = APP_CONFIG.TARGET_AGE;
+        const targetAge = currentLifeExpectancy;
 
         if (!inputs.retirementDate) { alert('Please calculate your retirement date first'); return; }
         if (annualSpending <= 0) { alert('Please enter an annual spending amount'); return; }
@@ -409,6 +591,7 @@ function calculateLongevityPlan() {
         displayLongevityResults(longevityData, startingPot, annualSpending, retirementAge, targetAge, retObj);
         createCombinedLifecycleChart(longevityData);
         createCashFlowChart(annualSpending);
+        syncChartSlidersToLifeExpectancy();
         getElement('growthChart')?.scrollIntoView({ behavior: 'smooth' });
 
     } catch (err) {
@@ -468,14 +651,22 @@ function generateLifecycleNarrative(retirementAge, annualSpending, potWeak, potA
     const avgDep   = depletionAge(fullAvg);
     const strongDep = depletionAge(fullStrong);
 
-    const scenarioCard = (icon, color, label, pot, dep) => {
+    function remainingAtTargetAge(data) {
+        const lastVal = data[data.length - 1];
+        return (lastVal !== null && lastVal > 0) ? lastVal : 0;
+    }
+
+    const scenarioCard = (icon, color, label, pot, dep, fullData) => {
         let html = `<div class="narrative-card narrative-${label.toLowerCase().split(' ')[0]}">`;
         html += `<div class="narrative-icon">${icon}</div><h4>${label}</h4>`;
         html += `<p>Pot at retirement: <strong>${fmt(pot)}</strong></p>`;
         if (dep) {
-            html += `<p class="narrative-warning">⚠️ Money runs out at <strong>age ${dep}</strong> — ${100 - dep} years short of age 100</p>`;
+            const targetAge = currentLifeExpectancy;
+            html += `<p class="narrative-warning">⚠️ Money runs out at <strong>age ${dep}</strong> — ${targetAge - dep} years short of age ${targetAge}</p>`;
         } else {
-            html += `<p class="narrative-ok">✅ Money lasts to age 100 with ${fmt(annualSpending)}/year spending</p>`;
+            const remaining = remainingAtTargetAge(fullData);
+            html += `<p class="narrative-ok">✅ Money lasts to age ${currentLifeExpectancy} with ${fmt(annualSpending)}/year spending</p>`;
+            html += `<p class="narrative-remaining">💰 Estimated pot remaining at age ${currentLifeExpectancy}: <strong>${fmt(remaining)}</strong></p>`;
         }
         return html + '</div>';
     };
@@ -487,9 +678,9 @@ function generateLifecycleNarrative(retirementAge, annualSpending, potWeak, potA
     html += 'and the <strong style="color:#28a745">green</strong> band represents a strong, high-growth market. ';
     html += 'The taller the combined bar, the more your pot could be worth at that age.</p></div>';
     html += '<div class="narrative-grid">';
-    html += scenarioCard('🔴', '#dc3545', 'Weak Growth (2%)',    potWeak,   weakDep);
-    html += scenarioCard('🔵', '#667eea', 'Average Growth (5%)', potAvg,    avgDep);
-    html += scenarioCard('🟢', '#28a745', 'Strong Growth (8%)',  potStrong, strongDep);
+    html += scenarioCard('🔴', '#dc3545', 'Weak Growth (2%)',    potWeak,   weakDep,   fullWeak);
+    html += scenarioCard('🔵', '#667eea', 'Average Growth (5%)', potAvg,    avgDep,    fullAvg);
+    html += scenarioCard('🟢', '#28a745', 'Strong Growth (8%)',  potStrong, strongDep, fullStrong);
     html += '</div>';
 
     el.innerHTML = html;

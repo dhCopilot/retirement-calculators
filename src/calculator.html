@@ -31,7 +31,7 @@
             <div class="date-section">
                 <div class="section-header">
                     <h3>Step 1: Your Age & Retirement Timeline</h3>
-                    <p class="section-description">Enter your date of birth and select your target retirement age</p>
+                    <p class="section-description">Enter your details to calculate retirement timeline and life expectancy</p>
                 </div>
                 
                 <div class="date-input-grid">
@@ -39,6 +39,16 @@
                         <label for="birthDate">Date of Birth</label>
                         <input type="date" id="birthDate" required>
                         <p class="input-hint">Required to calculate your retirement date</p>
+                    </div>
+
+                    <div class="date-input-box">
+                        <label for="genderSelect">Gender</label>
+                        <select id="genderSelect" class="age-select" required>
+                            <option value="">Select gender...</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                        <p class="input-hint">Used for life expectancy estimate</p>
                     </div>
 
                     <div class="date-input-box">
@@ -54,11 +64,48 @@
                         </select>
                         <p class="input-hint">Your target retirement age</p>
                     </div>
+
+                    <div class="date-input-box">
+                        <label for="postcode">Postcode <span class="optional-label">(optional)</span></label>
+                        <input type="text" id="postcode" placeholder="e.g. SW1A 1AA" maxlength="8" autocomplete="postal-code">
+                        <p class="input-hint">Refines life expectancy by region</p>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label>Your Current Age</label>
                     <p class="input-hint" id="currentAge">Enter your date of birth to calculate</p>
+                </div>
+
+                <!-- Life Expectancy / Planning Horizon -->
+                <div class="form-group life-expectancy-display" id="lifeExpectancyGroup">
+                    <label>📊 Plan To Age</label>
+                    <p class="input-hint" style="margin-bottom: 10px;">How far ahead should we project your retirement funds?</p>
+                    <div class="le-options">
+                        <label class="le-option">
+                            <input type="radio" name="lifeExpectancyMode" value="ons" checked>
+                            <span class="le-option-label">🏛️ ONS Life Expectancy</span>
+                            <span class="le-option-desc">Based on your gender, age &amp; postcode</span>
+                        </label>
+                        <label class="le-option">
+                            <input type="radio" name="lifeExpectancyMode" value="default">
+                            <span class="le-option-label">📅 Default (Age 100)</span>
+                            <span class="le-option-desc">Standard planning horizon</span>
+                        </label>
+                        <label class="le-option">
+                            <input type="radio" name="lifeExpectancyMode" value="manual">
+                            <span class="le-option-label">✏️ Manual</span>
+                            <span class="le-option-desc">Enter your own target age</span>
+                        </label>
+                    </div>
+                    <div id="manualAgeInput" style="display: none; margin-top: 10px;">
+                        <label for="manualTargetAge">Target Age</label>
+                        <input type="number" id="manualTargetAge" min="60" max="120" value="90" step="1">
+                    </div>
+                    <div class="le-result" id="lifeExpectancyResult">
+                        <p class="life-expectancy-value" id="lifeExpectancyValue"></p>
+                        <p class="input-hint" id="lifeExpectancySource"></p>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -243,14 +290,26 @@
 
             <div class="chart-container" id="lifecycleChartContainer" style="min-height: 450px; position: relative; display: none;">
                 <h3 id="mainChartTitle">Your Financial Lifecycle</h3>
-                <p class="chart-hint" id="mainChartHint">Your complete financial journey from today through retirement to age 100</p>
+                <p class="chart-hint" id="mainChartHint">Your complete financial journey from today through retirement</p>
+                <div class="chart-age-toggle">
+                    <label for="lifecycleAgeSlider">Plan to age:</label>
+                    <input type="range" id="lifecycleAgeSlider" min="65" max="110" value="100" step="1">
+                    <output id="lifecycleAgeValue" class="age-slider-value">100</output>
+                    <button id="lifecycleAgeReset" class="age-reset-btn" title="Reset to life expectancy">↺</button>
+                </div>
                 <canvas id="growthChart"></canvas>
                 <div id="lifecycleNarrative" class="chart-narrative" style="display: none;"></div>
             </div>
 
             <div class="chart-container" id="cashFlowChartContainer" style="min-height: 450px; position: relative; display: none;">
                 <h3>Retirement Cash Flow</h3>
-                <p class="chart-hint">Annual spending from retirement to age 100 across all 3 growth scenarios — solid bars = funded by your pot, faded bars = shortfall</p>
+                <p class="chart-hint" id="cashFlowChartHint">Annual spending across all 3 growth scenarios — solid bars = funded, faded = shortfall</p>
+                <div class="chart-age-toggle">
+                    <label for="cashFlowAgeSlider">Plan to age:</label>
+                    <input type="range" id="cashFlowAgeSlider" min="65" max="110" value="100" step="1">
+                    <output id="cashFlowAgeValue" class="age-slider-value">100</output>
+                    <button id="cashFlowAgeReset" class="age-reset-btn" title="Reset to life expectancy">↺</button>
+                </div>
                 <canvas id="cashFlowChart"></canvas>
             </div>
 
@@ -402,6 +461,9 @@
 
     <!-- Configuration -->
     <script src="config.js"></script>
+
+    <!-- Data modules -->
+    <script src="data/life-expectancy.js"></script>
 
     <!-- Utility modules -->
     <script src="utils/formatting.js"></script>

@@ -41,6 +41,12 @@
     margin-bottom: 20px;
 }
 
+@media (min-width: 1024px) {
+    .date-input-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
 .date-input-box {
     background: white;
     padding: 18px;
@@ -560,6 +566,239 @@
 .narrative-ok {
     color: #28a745 !important;
     font-weight: 600;
+}
+
+.narrative-remaining {
+    color: #1e3c72;
+    font-weight: 600;
+    margin-top: 4px;
+    font-size: 0.95em;
+}
+
+/* ── Life Expectancy Display ──────────────────────────────────── */
+.life-expectancy-display {
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+    border: 1px solid #667eea;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 12px;
+}
+
+.life-expectancy-display > label {
+    font-size: 1.05em;
+    font-weight: 700;
+    color: #1e3c72;
+    margin-bottom: 6px;
+}
+
+/* Radio option cards */
+.le-options {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.le-option {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 12px 10px;
+    border: 2px solid #dde3ee;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.le-option:hover {
+    border-color: #667eea;
+    background: #f8f9ff;
+}
+
+.le-option input[type="radio"] {
+    margin-bottom: 6px;
+    accent-color: #667eea;
+    width: 16px;
+    height: 16px;
+}
+
+.le-option:has(input:checked) {
+    border-color: #667eea;
+    background: #f0f4ff;
+    box-shadow: 0 0 0 1px #667eea;
+}
+
+.le-option-label {
+    font-weight: 600;
+    font-size: 0.92em;
+    color: #1e3c72;
+    margin-bottom: 3px;
+}
+
+.le-option-desc {
+    font-size: 0.78em;
+    color: #888;
+    line-height: 1.3;
+}
+
+/* Result display */
+.le-result {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #dde3ee;
+}
+
+.life-expectancy-value {
+    font-size: 1.15em;
+    color: #333;
+    margin: 4px 0 2px;
+}
+
+.life-expectancy-value strong {
+    color: #667eea;
+    font-size: 1.2em;
+}
+
+#lifeExpectancySource {
+    font-size: 0.82em;
+    color: #888;
+    margin-top: 2px;
+}
+
+#manualAgeInput label {
+    font-weight: 600;
+    font-size: 0.9em;
+    color: #555;
+}
+
+#manualTargetAge {
+    width: 100px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1.1em;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 4px;
+}
+
+/* ── Chart Age Toggle Slider ──────────────────────────────────── */
+.chart-age-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+    border: 1px solid #dde3ee;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin: 10px 0 14px;
+}
+
+.chart-age-toggle label {
+    font-weight: 600;
+    font-size: 0.9em;
+    color: #1e3c72;
+    white-space: nowrap;
+}
+
+.chart-age-toggle input[type="range"] {
+    flex: 1;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #dde3ee;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+.chart-age-toggle input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #667eea;
+    border: 2px solid white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.chart-age-toggle input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.chart-age-toggle input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #667eea;
+    border: 2px solid white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    cursor: pointer;
+}
+
+.age-slider-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    padding: 4px 10px;
+    background: #667eea;
+    color: white;
+    font-weight: 700;
+    font-size: 1em;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.age-reset-btn {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 1.1em;
+    cursor: pointer;
+    color: #667eea;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.age-reset-btn:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+@media (max-width: 480px) {
+    .chart-age-toggle {
+        flex-wrap: wrap;
+    }
+    .chart-age-toggle input[type="range"] {
+        order: 3;
+        width: 100%;
+        flex: unset;
+    }
+}
+
+@media (max-width: 600px) {
+    .le-options {
+        flex-direction: column;
+    }
+}
+
+.optional-label {
+    font-weight: 400;
+    color: #999;
+    font-size: 0.85em;
+}
+
+#postcode {
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 @media (max-width: 768px) {

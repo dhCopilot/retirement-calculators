@@ -30,7 +30,7 @@ function createCashFlowChart(annualSpending) {
     if (!inputs.retirementDate || !inputs.birthDate) return;
 
     try {
-        const targetAge = APP_CONFIG.TARGET_AGE;
+        const targetAge = (typeof currentLifeExpectancy !== 'undefined') ? currentLifeExpectancy : APP_CONFIG.TARGET_AGE;
         const years = calculateYearsUntilRetirement(inputs.birthDate, inputs.retirementDate);
         const currentAge = calculateCurrentAge(inputs.birthDate);
         const retirementAge = calculateRetirementAge(inputs.birthDate, inputs.retirementDate);

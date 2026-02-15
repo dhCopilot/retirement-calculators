@@ -46,7 +46,7 @@ function createCombinedLifecycleChart(longevityData) {
         const currentAge = calculateCurrentAge(growthProjectionData.birthDate);
         const annualSpending = longevityData.length > 0 ? longevityData[0].spending : 0;
         const retirementAge = growthProjectionData.retirementAge;
-        const targetAge = APP_CONFIG.TARGET_AGE;
+        const targetAge = (typeof currentLifeExpectancy !== 'undefined') ? currentLifeExpectancy : APP_CONFIG.TARGET_AGE;
         const yearsInRetirement = targetAge - retirementAge;
         const scenarios = APP_CONFIG.SCENARIO_LIST;
 
