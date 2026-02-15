@@ -1,9 +1,12 @@
 /**
  * Input Validation
+ * Validates user inputs against UK pension rules and sensible bounds.
+ *
+ * @module validation/input-validator
  * @user-story US#1 - Calculator Input
  * @user-story US#2 - Pension Projection
  * @user-story US#5 - Investment Growth Assumption
- * @version 0.3.0
+ * @version 0.4.0
  */
 
 function validateInputs(birthDate, retirementDate, currentPot, monthlyContribution, investmentGrowth, inflationRate, includeInflation) {
@@ -33,5 +36,9 @@ function validateInputs(birthDate, retirementDate, currentPot, monthlyContributi
 
 function calculateYearsUntilRetirement(birthDate, retirementDate) {
     const retirement = new Date(retirementDate);
-    return retirement.getFullYear() - new Date().getFullYear();
+    const today = new Date();
+    // Use fractional years for more accurate projection
+    const msPerYear = 365.25 * 24 * 60 * 60 * 1000;
+    const yearsRemaining = (retirement - today) / msPerYear;
+    return Math.max(0, Math.round(yearsRemaining));
 }

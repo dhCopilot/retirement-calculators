@@ -30,13 +30,14 @@
 - [ ] Stack layout on mobile
 
 ### Growth Chart Visualization
-- [ ] Line chart showing pot growth over time
-- [ ] Show "Your Contributions" line separately
-- [ ] Show "Total Growth" visually
-- [ ] Chart responsive to screen size
-- [ ] Legend clearly labeled
-- [ ] Currency formatted on Y-axis
-- [ ] Interactive tooltips on hover
+- [x] Line chart showing pot growth over time
+- [x] Show "Your Contributions" line separately
+- [x] Show "Total Growth" visually
+- [x] Chart responsive to screen size
+- [x] Legend clearly labeled
+- [x] Currency formatted on Y-axis
+- [x] Interactive tooltips on hover
+- [x] **Integrated with longevity planning**: Chart extends to show retirement drawdown when longevity plan activated (see US#6)
 
 ### Mobile Responsiveness
 - [ ] All content readable on small screens

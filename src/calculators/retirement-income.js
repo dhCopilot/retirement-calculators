@@ -1,14 +1,17 @@
 /**
  * Retirement Income Calculator
+ * Spending plan analysis and maximum sustainable withdrawal calculations.
+ *
+ * @module calculators/retirement-income
  * @user-story US#5 - Retirement Planning & Spending Analysis
- * @version 0.3.0
+ * @version 0.4.0
  */
 
 /**
  * Mode A: Spending Plan - User enters annual spend, check if money lasts
  */
-function calculateSpendingPlan(startingPot, annualSpend, yearsUntilRetirement, lifeExpectancy, investmentGrowth, inflationRate) {
-    const retirementYears = lifeExpectancy - (new Date().getFullYear() - new Date().getFullYear() + yearsUntilRetirement);
+function calculateSpendingPlan(startingPot, annualSpend, retirementAge, lifeExpectancy, investmentGrowth, inflationRate) {
+    const retirementYears = lifeExpectancy - retirementAge;
     const monthlyGrowthRate = Math.pow(1 + investmentGrowth, 1/12) - 1;
     
     let pot = startingPot;
@@ -37,16 +40,18 @@ function calculateSpendingPlan(startingPot, annualSpend, yearsUntilRetirement, l
 
         if (pot < 0) {
             moneyRunsOut = true;
-            ageWhenRunsOut = (new Date().getFullYear() + yearsUntilRetirement) + year - 1;
+            ageWhenRunsOut = retirementAge + year - 1;
             pot = 0; // Can't have negative pot
         }
 
         yearByYear.push({
             year: year,
-            ageAtStart: (new Date().getFullYear() - new Date().getFullYear() + yearsUntilRetirement) + year - 1,
+            age: retirementAge + year - 1,
             potAtStart: Math.round(yearStart * 100) / 100,
             annualSpend: Math.round(yearlySpend * 100) / 100,
             potAtEnd: Math.round(Math.max(0, pot) * 100) / 100,
+            balance: Math.round(Math.max(0, pot) * 100) / 100,
+            spending: Math.round(yearlySpend * 100) / 100,
             moneyRunsOut: pot <= 0
         });
     }
@@ -64,8 +69,8 @@ function calculateSpendingPlan(startingPot, annualSpend, yearsUntilRetirement, l
 /**
  * Mode B: Maximum Sustainable Spending - Calculate what they can safely spend
  */
-function calculateMaximumSustainableSpend(startingPot, yearsUntilRetirement, lifeExpectancy, investmentGrowth, inflationRate) {
-    const retirementYears = lifeExpectancy - (new Date().getFullYear() - new Date().getFullYear() + yearsUntilRetirement);
+function calculateMaximumSustainableSpend(startingPot, retirementAge, lifeExpectancy, investmentGrowth, inflationRate) {
+    const retirementYears = lifeExpectancy - retirementAge;
     const monthlyGrowthRate = Math.pow(1 + investmentGrowth, 1/12) - 1;
     
     // Binary search for maximum sustainable spend
@@ -75,7 +80,7 @@ function calculateMaximumSustainableSpend(startingPot, yearsUntilRetirement, lif
     
     for (let iteration = 0; iteration < 20; iteration++) {
         const testSpend = (minSpend + maxSpend) / 2;
-        const result = calculateSpendingPlan(startingPot, testSpend, yearsUntilRetirement, lifeExpectancy, investmentGrowth, inflationRate);
+        const result = calculateSpendingPlan(startingPot, testSpend, retirementAge, lifeExpectancy, investmentGrowth, inflationRate);
         
         if (result.moneyLasts && result.finalBalance >= -100) { // Allow small margin
             bestSpend = testSpend;
@@ -89,7 +94,7 @@ function calculateMaximumSustainableSpend(startingPot, yearsUntilRetirement, lif
     return {
         maxAnnualSpend: Math.round(bestSpend * 100) / 100,
         maxMonthlySpend: Math.round((bestSpend / 12) * 100) / 100,
-        projection: calculateSpendingPlan(startingPot, bestSpend, yearsUntilRetirement, lifeExpectancy, investmentGrowth, inflationRate)
+        projection: calculateSpendingPlan(startingPot, bestSpend, retirementAge, lifeExpectancy, investmentGrowth, inflationRate)
     };
 }
 

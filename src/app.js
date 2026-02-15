@@ -1,81 +1,78 @@
 /**
- * Main Application Logic
- * Connects all components for v0.3
+ * NestMapOS — Main Application Orchestrator
+ * Wires up event handlers and coordinates between calculators, charts, and the DOM.
+ *
+ * Dependencies (loaded via script tags before this file):
+ *   config.js, utils/formatting.js, utils/date-utils.js, utils/drawdown.js,
+ *   utils/form-helpers.js, calculators/*, validation/input-validator.js,
+ *   charts/lifecycle-chart-builder.js, charts/cash-flow-chart-builder.js,
+ *   charts/retirement-projection-chart.js
+ *
+ * @module app
+ * @version 0.4.0
  */
 
-let selectedScenarioRate = 5; // Default to Average
+// ===== TEST DEFAULTS (set to true for development only) =====
+const TEST_MODE = false;
+if (TEST_MODE) {
+    window.addEventListener('DOMContentLoaded', () => {
+        getElement('birthDate').value = '1972-01-01';
+        getElement('birthDate').dispatchEvent(new Event('change'));
+        getElement('retirementAgeSelect').value = '60';
+        getElement('retirementAgeSelect').dispatchEvent(new Event('change'));
+        getElement('currentPot').value = '600,000';
+        getElement('monthlyContribution').value = '500';
+    });
+}
 
-// ========== Retirement Date Calculator ==========
-document.getElementById('calculateRetirementDateBtn')?.addEventListener('click', function() {
-    const currentAge = parseInt(document.getElementById('currentAge').value);
-    const retirementAge = parseInt(document.getElementById('retirementAgeSelect').value);
-    
-    if (isNaN(currentAge) || currentAge < 18 || currentAge > 75) {
-        alert('Please enter a valid age (18-75)');
+// ── Application State ────────────────────────────────────────────
+let selectedScenarioRate = APP_CONFIG.DEFAULT_GROWTH_RATE;
+
+/** Shared projection data consumed by lifecycle chart builder */
+let growthProjectionData = {
+    weak: null, average: null, strong: null,
+    birthDate: null, retirementDate: null, retirementAge: null
+};
+
+// Backward-compat aliases for functions that moved to utility modules
+const unformatNumberInput = unformatNumber;
+const formatNumberForDisplay = formatNumberWithCommas;
+
+// ══════════════════════════════════════════════════════════════════
+//  EVENT HANDLERS
+// ══════════════════════════════════════════════════════════════════
+
+/** Auto-calculate planned retirement date from DOB + selected age */
+function autoCalculateRetirementDate() {
+    const birthDateInput = getElement('birthDate')?.value;
+    const retirementAge = parseInt(getElement('retirementAgeSelect')?.value);
+    if (!birthDateInput || isNaN(retirementAge)) return;
+
+    const dob = new Date(birthDateInput);
+    const retDate = new Date(dob.getFullYear() + retirementAge, dob.getMonth(), dob.getDate());
+    const yyyy = retDate.getFullYear();
+    const mm = String(retDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(retDate.getDate()).padStart(2, '0');
+    getElement('retirementDate').value = `${yyyy}-${mm}-${dd}`;
+}
+
+// Wire up DOB → current age display + auto retirement date
+getElement('retirementAgeSelect')?.addEventListener('change', autoCalculateRetirementDate);
+
+getElement('birthDate')?.addEventListener('change', function () {
+    const currentAgeEl = getElement('currentAge');
+    if (!this.value) {
+        if (currentAgeEl) currentAgeEl.textContent = 'Enter your date of birth to calculate';
         return;
     }
-    
-    const today = new Date();
-    const yearsToRetirement = retirementAge - currentAge;
-    const retirementDate = new Date(today.getFullYear() + yearsToRetirement, today.getMonth(), today.getDate());
-    
-    // Format date as YYYY-MM-DD for input
-    const dateString = retirementDate.toISOString().split('T')[0];
-    document.getElementById('retirementDate').value = dateString;
-    
-    // Show confirmation message
-    const retirementYear = retirementDate.getFullYear();
-    alert(`Retirement date set to: ${retirementDate.toLocaleDateString('en-GB')} (Age ${retirementAge}, Year ${retirementYear})`);
+    const age = calculateExactAge(this.value);
+    if (currentAgeEl) currentAgeEl.textContent = `You are currently ${formatAge(age)}`;
+    autoCalculateRetirementDate();
 });
 
-// ========== Number Input Formatting (Thousands Separators) ==========
-function formatNumberInput(value) {
-    // Remove non-digit characters
-    const numValue = value.replace(/[^\d]/g, '');
-    // Format with commas
-    return numValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-
-function unformatNumberInput(value) {
-    // Remove all commas
-    return value.replace(/,/g, '');
-}
-
-// Add formatting to number inputs
-const numberInputs = [
-    document.getElementById('currentPot'),
-    document.getElementById('monthlyContribution'),
-    document.getElementById('annualSpending')
-];
-
-numberInputs.forEach(input => {
-    if (input) {
-        // Format on input
-        input.addEventListener('input', function() {
-            const unformatted = unformatNumberInput(this.value);
-            if (unformatted) {
-                this.value = formatNumberInput(this.value);
-            }
-        });
-        
-        // Remove formatting on focus for easier editing
-        input.addEventListener('focus', function() {
-            this.value = unformatNumberInput(this.value);
-        });
-        
-        // Re-format on blur
-        input.addEventListener('blur', function() {
-            if (this.value) {
-                this.value = formatNumberInput(this.value);
-            }
-        });
-    }
-});
-
-// ========== Event Handlers ==========
-// Handle scenario selection
+// Scenario buttons
 document.querySelectorAll('.scenario-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
+    btn.addEventListener('click', function (e) {
         e.preventDefault();
         document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
@@ -83,218 +80,232 @@ document.querySelectorAll('.scenario-btn').forEach(btn => {
     });
 });
 
-// Handle inflation rate input visibility
-document.getElementById('includeInflation').addEventListener('change', function(e) {
-    document.getElementById('inflationRateGroup').style.display = e.target.checked ? 'block' : 'none';
+// Inflation toggle
+getElement('includeInflation')?.addEventListener('change', e => {
+    toggleVisibility('inflationRateGroup', e.target.checked);
 });
 
-document.getElementById('calculateBtn').addEventListener('click', calculateRetirement);
-document.getElementById('recalculateBtn').addEventListener('click', function() {
-    document.getElementById('results').style.display = 'none';
-    document.getElementById('retirementSpending').style.display = 'none';
-    document.getElementById('spendingToggle').style.display = 'none';
-    document.getElementById('calculator-form').scrollIntoView({ behavior: 'smooth' });
+// Primary action buttons
+getElement('calculateBtn')?.addEventListener('click', calculateRetirement);
+getElement('recalculateBtn')?.addEventListener('click', resetToForm);
+getElement('toggleSpendingAnalysisBtn')?.addEventListener('click', () => {
+    toggleVisibility('retirementSpending', true);
+    getElement('retirementSpending')?.scrollIntoView({ behavior: 'smooth' });
 });
+getElement('analyzeSpendingBtn')?.addEventListener('click', analyzeRetirementSpending);
+getElement('calculateLongevityBtn')?.addEventListener('click', calculateLongevityPlan);
 
-document.getElementById('toggleSpendingAnalysisBtn')?.addEventListener('click', function() {
-     document.getElementById('retirementSpending').style.display = 'block';
-    document.getElementById('retirementSpending').scrollIntoView({ behavior: 'smooth' });
-});
-
-document.getElementById('analyzeSpendingBtn')?.addEventListener('click', analyzeRetirementSpending);
-
-// Handle spending mode changes
+// Spending mode radio toggle
 document.querySelectorAll('input[name="spendingMode"]').forEach(radio => {
-    radio.addEventListener('change', function() {
-        const modeAInputs = document.getElementById('modeAInputs');
-        if (this.value === 'mode-a') {
-            modeAInputs.style.display = 'block';
-        } else {
-            modeAInputs.style.display = 'none';
-        }
+    radio.addEventListener('change', function () {
+        toggleVisibility('modeAInputs', this.value === 'mode-a');
     });
 });
 
+// Attach comma-formatting to currency text inputs
+attachCurrencyFormatting(['currentPot', 'monthlyContribution', 'retirementAnnualSpending', 'annualSpending']);
+
+// ══════════════════════════════════════════════════════════════════
+//  MAIN CALCULATION FLOW
+// ══════════════════════════════════════════════════════════════════
+
+/**
+ * Main entry point — runs projection, updates results, triggers charts.
+ */
 function calculateRetirement() {
-    const birthDate = document.getElementById('birthDate').value;
-    const retirementDate = document.getElementById('retirementDate').value;
-    const currentPot = parseFloat(unformatNumberInput(document.getElementById('currentPot').value)) || 0;
-    const monthlyContribution = parseFloat(unformatNumberInput(document.getElementById('monthlyContribution').value)) || 0;
-    const investmentGrowth = selectedScenarioRate; // Use selected scenario
-    const includeInflation = document.getElementById('includeInflation').checked;
-    const inflationRate = parseFloat(document.getElementById('inflationRate').value) || 2.5;
+    try {
+        const birthDate = getElement('birthDate').value;
+        const retirementDate = getElement('retirementDate').value;
+        const currentPot = readCurrencyInput('currentPot');
+        const monthlyContribution = readCurrencyInput('monthlyContribution');
+        const investmentGrowth = selectedScenarioRate;
+        const includeInflation = getElement('includeInflation').checked;
+        const inflationRate = parseFloat(getElement('inflationRate').value) || APP_CONFIG.DEFAULT_INFLATION_RATE;
 
-    const validation = validateInputs(birthDate, retirementDate, currentPot, monthlyContribution, investmentGrowth, inflationRate, includeInflation);
-    
-    if (!validation.isValid) {
-        alert('Please fix the following errors:\n\n' + validation.errors.join('\n'));
-        return;
-    }
+        const validation = validateInputs(birthDate, retirementDate, currentPot, monthlyContribution, investmentGrowth, inflationRate, includeInflation);
+        if (!validation.isValid) {
+            alert('Please fix the following errors:\n\n' + validation.errors.join('\n'));
+            return;
+        }
 
-    const years = calculateYearsUntilRetirement(birthDate, retirementDate);
-    
-    // Calculate main projection for selected scenario
-    const projection = calculatePensionProjection(currentPot, monthlyContribution, years, investmentGrowth / 100);
-    const income = calculateIncomeProjection(projection.finalPot);
-
-    // Handle inflation-adjusted display
-    let displayPot = projection.finalPot;
-    let displayIncome = income.annualIncome;
-    let displayMonthly = income.monthlyIncome;
-
-    if (includeInflation) {
-        const realPot = adjustForInflation(projection.finalPot, years, inflationRate / 100);
-        const inflationAdjusted = getInflationAdjustedIncome(income.annualIncome, years, inflationRate / 100);
-        
-        displayPot = realPot;
-        displayIncome = inflationAdjusted.realAnnualIncome;
-        displayMonthly = inflationAdjusted.realMonthlyIncome;
-
-        // Show inflation badge and alternative values
-        document.getElementById('inflationBadge').style.display = 'block';
-        document.getElementById('projectedPotReal').style.display = 'block';
-        document.getElementById('projectedPotNominal').style.display = 'block';
-        document.getElementById('projectedPotNominal').textContent = 'Nominal: ' + formatCurrency(projection.finalPot);
-        document.getElementById('incomeAlternative').style.display = 'block';
-        document.getElementById('incomeAlternative').textContent = 'Nominal: £' + Math.round(inflationAdjusted.nominalAnnualIncome).toLocaleString('en-GB');
-    } else {
-        document.getElementById('inflationBadge').style.display = 'none';
-        document.getElementById('projectedPotReal').style.display = 'none';
-        document.getElementById('projectedPotNominal').style.display = 'none';
-        document.getElementById('incomeAlternative').style.display = 'none';
-    }
-
-    document.getElementById('projectedPot').textContent = formatCurrency(displayPot);
-    document.getElementById('taxFreeLump').textContent = formatCurrency(income.taxFreeLumpSum);
-    document.getElementById('annualIncome').textContent = formatCurrency(displayIncome);
-    document.getElementById('monthlyIncome').textContent = formatCurrency(displayMonthly);
-    document.getElementById('resultsGrowthRate').textContent = investmentGrowth.toFixed(1) + '%';
-    document.getElementById('cardGrowthRate').textContent = investmentGrowth.toFixed(1) + '%';
-    
-    // Add contributions and growth display
-    document.getElementById('totalContributions').textContent = formatCurrency(projection.totalContributed);
-    document.getElementById('growthAmount').textContent = formatCurrency(projection.growthAmount);
-    const growthPercent = ((projection.growthAmount / projection.finalPot) * 100).toFixed(1);
-    document.getElementById('growthPercentage').textContent = growthPercent + '% of final pot';
-    document.getElementById('yearsToRetirement').textContent = years;
-
-    // Calculate and display all 3 scenarios for comparison
-    calculateScenarioComparison(currentPot, monthlyContribution, years, inflationRate / 100, includeInflation, investmentGrowth);
-
-    // Calculate all 3 scenarios for chart display
-    const weakProjection = calculatePensionProjection(currentPot, monthlyContribution, years, 0.02);
-    const averageProjection = calculatePensionProjection(currentPot, monthlyContribution, years, 0.05);
-    const strongProjection = calculatePensionProjection(currentPot, monthlyContribution, years, 0.08);
-
-    document.getElementById('results').style.display = 'block';
-    document.getElementById('spendingToggle').style.display = 'block';
-    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-
-    // Display chart with all 3 scenarios
-    createGrowthChart(weakProjection.yearByYear, averageProjection.yearByYear, strongProjection.yearByYear);
-}
-
-function calculateScenarioComparison(pot, monthly, years, inflationRate, includeInflation, selectedRate) {
-    const scenarios = [
-        { id: 'Weak', rate: 0.02, elemPot: 'scenarioWeakPot', elemIncome: 'scenarioWeakIncome', elemDiff: 'scenarioWeakDiff' },
-        { id: 'Average', rate: 0.05, elemPot: 'scenarioAveragePot', elemIncome: 'scenarioAverageIncome', elemDiff: 'scenarioAverageDiff' },
-        { id: 'Strong', rate: 0.08, elemPot: 'scenarioStrongPot', elemIncome: 'scenarioStrongIncome', elemDiff: 'scenarioStrongDiff' }
-    ];
-
-    let averageProjection = null;
-
-    scenarios.forEach(scenario => {
-        const projection = calculatePensionProjection(pot, monthly, years, scenario.rate);
+        const years = calculateYearsUntilRetirement(birthDate, retirementDate);
+        const projection = calculatePensionProjection(currentPot, monthlyContribution, years, investmentGrowth / 100);
         const income = calculateIncomeProjection(projection.finalPot);
-        
+
+        // Inflation-adjusted display
         let displayPot = projection.finalPot;
         let displayIncome = income.annualIncome;
-
-        // Store average scenario for comparison
-        if (scenario.id === 'Average') {
-            averageProjection = { pot: displayPot, income: displayIncome };
-        }
+        let displayMonthly = income.monthlyIncome;
 
         if (includeInflation) {
-            const realPot = adjustForInflation(projection.finalPot, years, inflationRate);
-            const inflationAdj = getInflationAdjustedIncome(income.annualIncome, years, inflationRate);
+            const realPot = adjustForInflation(projection.finalPot, years, inflationRate / 100);
+            const inflAdj = getInflationAdjustedIncome(income.annualIncome, years, inflationRate / 100);
             displayPot = realPot;
-            displayIncome = inflationAdj.realAnnualIncome;
+            displayIncome = inflAdj.realAnnualIncome;
+            displayMonthly = inflAdj.realMonthlyIncome;
+
+            toggleVisibility('inflationBadge', true);
+            toggleVisibility('projectedPotReal', true);
+            toggleVisibility('projectedPotNominal', true);
+            setText('projectedPotNominal', 'Nominal: ' + formatCurrency(projection.finalPot));
+            toggleVisibility('incomeAlternative', true);
+            setText('incomeAlternative', 'Nominal: £' + Math.round(inflAdj.nominalAnnualIncome).toLocaleString(APP_CONFIG.LOCALE));
+        } else {
+            toggleVisibility('inflationBadge', false);
+            toggleVisibility('projectedPotReal', false);
+            toggleVisibility('projectedPotNominal', false);
+            toggleVisibility('incomeAlternative', false);
         }
 
-        // Update display
-        document.getElementById(scenario.elemPot).textContent = formatCurrency(displayPot);
-        document.getElementById(scenario.elemIncome).textContent = formatCurrency(displayIncome);
+        // Update result cards
+        setText('projectedPot', formatCurrency(displayPot));
+        setText('taxFreeLump', formatCurrency(income.taxFreeLumpSum));
+        setText('annualIncome', formatCurrency(displayIncome));
+        setText('monthlyIncome', formatCurrency(displayMonthly));
+        setText('resultsGrowthRate', investmentGrowth.toFixed(1) + '%');
+        setText('cardGrowthRate', investmentGrowth.toFixed(1) + '%');
+        setText('totalContributions', formatCurrency(projection.totalContributed));
+        setText('growthAmount', formatCurrency(projection.growthAmount));
+        const growthPct = ((projection.growthAmount / projection.finalPot) * 100).toFixed(1);
+        setText('growthPercentage', growthPct + '% of final pot');
+        setText('yearsToRetirement', years);
 
-        // Show comparison for Weak and Strong
-        if (scenario.id !== 'Average' && averageProjection) {
-            const potDiff = displayPot - averageProjection.pot;
-            const potDiffPercent = ((potDiff / averageProjection.pot) * 100).toFixed(1);
-            const diffText = potDiff >= 0 ? `+${formatCurrency(potDiff)} (+${potDiffPercent}%)` : `${formatCurrency(potDiff)} (${potDiffPercent}%)`;
-            document.getElementById(scenario.elemDiff).textContent = `vs Average: ${diffText}`;
+        // 3-scenario comparison cards
+        calculateScenarioComparison(currentPot, monthlyContribution, years, inflationRate / 100, includeInflation);
+
+        // Store year-by-year data for all 3 scenarios (used by chart builders)
+        const scenarios = APP_CONFIG.SCENARIO_LIST;
+        const projections = {};
+        scenarios.forEach(s => {
+            projections[s.id.toLowerCase()] = calculatePensionProjection(currentPot, monthlyContribution, years, s.rate);
+        });
+        growthProjectionData.weak = projections.weak.yearByYear;
+        growthProjectionData.average = projections.average.yearByYear;
+        growthProjectionData.strong = projections.strong.yearByYear;
+        growthProjectionData.birthDate = birthDate;
+        growthProjectionData.retirementDate = retirementDate;
+        growthProjectionData.retirementAge = calculateRetirementAge(birthDate, retirementDate);
+
+        // Show results sections
+        toggleVisibility('results', true);
+        toggleVisibility('spendingToggle', true);
+        toggleVisibility('longevityPlanning', true);
+
+        // Pre-populate spending suggestion (4% SWR of average pot)
+        const avgFinalPot = projections.average.finalPot;
+        const suggested = Math.round(avgFinalPot * APP_CONFIG.SAFE_WITHDRAWAL_RATE);
+        const spendingInput = getElement('retirementAnnualSpending');
+        if (spendingInput && !spendingInput.value) {
+            spendingInput.value = suggested;
+        }
+        setText('spendingSuggestion',
+            'Suggested: £' + suggested.toLocaleString(APP_CONFIG.LOCALE) + '/year (4% safe withdrawal rate)');
+
+        // Auto-generate charts
+        const currentSpending = parseCurrencyInput(spendingInput.value) || suggested;
+        toggleVisibility('lifecycleChartContainer', true);
+        const initialLongevityData = buildLongevityData(currentSpending);
+        createCombinedLifecycleChart(initialLongevityData);
+        createCashFlowChart(currentSpending);
+
+        // Format the spending input with commas
+        if (spendingInput.value) {
+            const numVal = parseCurrencyInput(spendingInput.value);
+            if (!isNaN(numVal) && numVal >= 0) {
+                spendingInput.value = formatNumberWithCommas(Math.round(numVal));
+            }
+        }
+
+        getElement('results')?.scrollIntoView({ behavior: 'smooth' });
+
+    } catch (err) {
+        console.error('Calculation error:', err);
+        alert('An error occurred during calculation. Please check your inputs and try again.');
+    }
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  SCENARIO COMPARISON
+// ══════════════════════════════════════════════════════════════════
+
+function calculateScenarioComparison(pot, monthly, years, inflationRate, includeInflation) {
+    const scenarios = [
+        { id: 'Weak',    rate: 0.02, elemPot: 'scenarioWeakPot',    elemIncome: 'scenarioWeakIncome',    elemDiff: 'scenarioWeakDiff' },
+        { id: 'Average', rate: 0.05, elemPot: 'scenarioAveragePot', elemIncome: 'scenarioAverageIncome', elemDiff: 'scenarioAverageDiff' },
+        { id: 'Strong',  rate: 0.08, elemPot: 'scenarioStrongPot',  elemIncome: 'scenarioStrongIncome',  elemDiff: 'scenarioStrongDiff' }
+    ];
+
+    // Pre-calculate all so comparisons work regardless of order
+    const results = {};
+    scenarios.forEach(s => {
+        const proj = calculatePensionProjection(pot, monthly, years, s.rate);
+        const inc  = calculateIncomeProjection(proj.finalPot);
+        let dPot = proj.finalPot, dIncome = inc.annualIncome;
+        if (includeInflation) {
+            dPot = adjustForInflation(proj.finalPot, years, inflationRate);
+            dIncome = getInflationAdjustedIncome(inc.annualIncome, years, inflationRate).realAnnualIncome;
+        }
+        results[s.id] = { pot: dPot, income: dIncome };
+    });
+
+    scenarios.forEach(s => {
+        setText(s.elemPot, formatCurrency(results[s.id].pot));
+        setText(s.elemIncome, formatCurrency(results[s.id].income));
+        if (s.id !== 'Average') {
+            const avg = results['Average'];
+            const diff = results[s.id].pot - avg.pot;
+            const pct = ((diff / avg.pot) * 100).toFixed(1);
+            const txt = diff >= 0
+                ? `+${formatCurrency(diff)} (+${pct}%)`
+                : `${formatCurrency(diff)} (${pct}%)`;
+            setText(s.elemDiff, `vs Average: ${txt}`);
         }
     });
-
-    document.getElementById('scenarioComparison').style.display = 'block';
+    toggleVisibility('scenarioComparison', true);
 }
 
-function formatCurrency(amount) {
-    return '£' + amount.toLocaleString('en-GB', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-}
+// ══════════════════════════════════════════════════════════════════
+//  SPENDING ANALYSIS
+// ══════════════════════════════════════════════════════════════════
 
 function analyzeRetirementSpending() {
-    // Get values from form and spending analysis section
-    const birthDate = document.getElementById('birthDate').value;
-    const retirementDate = document.getElementById('retirementDate').value;
-    const currentPot = parseFloat(unformatNumberInput(document.getElementById('currentPot').value)) || 0;
-    const monthlyContribution = parseFloat(unformatNumberInput(document.getElementById('monthlyContribution').value)) || 0;
-    const investmentGrowth = selectedScenarioRate / 100;
-    const includeInflation = document.getElementById('includeInflation').checked;
-    const inflationRate = parseFloat(document.getElementById('inflationRate').value) || 2.5;
-    const lifeExpectancy = parseFloat(document.getElementById('lifeExpectancy').value) || 100;
-    
-    const spendingMode = document.querySelector('input[name="spendingMode"]:checked').value;
-    const annualSpending = spendingMode === 'mode-a' ? parseFloat(unformatNumberInput(document.getElementById('annualSpending').value)) || 0 : 0;
+    try {
+        const inputs = readFormInputs();
+        const investmentGrowth = selectedScenarioRate / 100;
+        const lifeExpectancy = parseFloat(getElement('lifeExpectancy')?.value) || APP_CONFIG.TARGET_AGE;
+        const spendingMode = document.querySelector('input[name="spendingMode"]:checked').value;
+        const annualSpending = spendingMode === 'mode-a' ? readCurrencyInput('annualSpending') : 0;
 
-    // Calculate years to retirement
-    const years = calculateYearsUntilRetirement(birthDate, retirementDate);
-    
-    // Calculate projected pension pot
-    const projection = calculatePensionProjection(currentPot, monthlyContribution, years, investmentGrowth);
-    let startingPot = projection.finalPot;
+        const yearsUntilRetirement = calculateYearsUntilRetirement(inputs.birthDate, inputs.retirementDate);
+        const retirementAge = calculateRetirementAge(inputs.birthDate, inputs.retirementDate);
+        const projection = calculatePensionProjection(inputs.currentPot, inputs.monthlyContribution, yearsUntilRetirement, investmentGrowth);
+        const startingPot = projection.finalPot;
 
-    // If inflation is on, don't adjust - work with future pounds
-    if (includeInflation) {
-        const inflationAdj = getInflationAdjustedIncome(projection.finalPot, years, inflationRate / 100);
-        // For spending analysis, show in nominal (future pounds)
+        // Note: spending analysis works in nominal (future) pounds;
+        // inflation adjustment is handled within the spending plan calculation.
+
+        let result;
+        const inflRate = inputs.includeInflation ? inputs.inflationRate / 100 : 0;
+        if (spendingMode === 'mode-a') {
+            result = calculateSpendingPlan(startingPot, annualSpending, retirementAge, lifeExpectancy, investmentGrowth, inflRate);
+        } else {
+            const maxResult = calculateMaximumSustainableSpend(startingPot, retirementAge, lifeExpectancy, investmentGrowth, inflRate);
+            result = { mode: 'maximum-spend', maxAnnualSpend: maxResult.maxAnnualSpend, maxMonthlySpend: maxResult.maxMonthlySpend, ...maxResult.projection };
+        }
+
+        displaySpendingResults(result, startingPot, yearsUntilRetirement, lifeExpectancy, annualSpending, spendingMode);
+
+    } catch (err) {
+        console.error('Spending analysis error:', err);
+        alert('An error occurred during spending analysis. Please check your inputs.');
     }
-
-    // Run spending analysis
-    let result;
-    if (spendingMode === 'mode-a') {
-        result = calculateSpendingPlan(startingPot, annualSpending, years, lifeExpectancy, investmentGrowth, includeInflation ? inflationRate / 100 : 0);
-    } else {
-        const maxResult = calculateMaximumSustainableSpend(startingPot, years, lifeExpectancy, investmentGrowth, includeInflation ? inflationRate / 100 : 0);
-        result = {
-            mode: 'maximum-spend',
-            maxAnnualSpend: maxResult.maxAnnualSpend,
-            maxMonthlySpend: maxResult.maxMonthlySpend,
-            ...maxResult.projection
-        };
-    }
-
-    // Display results
-    displaySpendingResults(result, startingPot, years, lifeExpectancy, annualSpending, spendingMode);
 }
 
 function displaySpendingResults(result, pot, yearsUntilRetirement, lifeExpectancy, annualSpending, mode) {
-    const statusCard = document.getElementById('spendingStatus');
-    const retirementAge = new Date().getFullYear() - new Date().getFullYear() + yearsUntilRetirement + 65; // Assuming retirement at 65 +years
-    
-    // Create status card
+    const inputs = readFormInputs();
+    const retirementAge = calculateRetirementAge(inputs.birthDate, inputs.retirementDate);
+    const statusCard = getElement('spendingStatus');
+
     if (result.moneyLasts) {
         statusCard.className = 'spending-status-card success';
         statusCard.innerHTML = '✅ Success! Your money will last';
@@ -306,23 +317,191 @@ function displaySpendingResults(result, pot, yearsUntilRetirement, lifeExpectanc
         statusCard.innerHTML = `⚠️ Warning: Your money will run out at age ${result.ageWhenRunsOut}`;
     }
 
-    // Update summary grid
-    document.getElementById('summaryStartingPot').textContent = formatCurrency(pot);
-    
-    if (mode === 'mode-a') {
-        document.getElementById('summaryAnnualSpending').textContent = formatCurrency(annualSpending);
-    } else if (result.maxAnnualSpend) {
-        document.getElementById('summaryAnnualSpending').textContent = formatCurrency(result.maxAnnualSpend);
-    }
-    
-    document.getElementById('summaryRetirementYears').textContent = result.yearByYear.length + ' years';
-    document.getElementById('summaryTotalSpent').textContent = formatCurrency(result.totalSpent);
-    document.getElementById('summaryFinalBalance').textContent = formatCurrency(result.finalBalance);
+    setText('summaryStartingPot', formatCurrency(pot));
+    setText('summaryAnnualSpending', formatCurrency(mode === 'mode-a' ? annualSpending : (result.maxAnnualSpend || 0)));
+    setText('summaryRetirementYears', result.yearByYear.length + ' years');
+    setText('summaryTotalSpent', formatCurrency(result.totalSpent));
+    setText('summaryFinalBalance', formatCurrency(result.finalBalance));
 
-    document.getElementById('spendingResults').style.display = 'block';
-
-    // Create chart if possible
-    if (result.yearByYear && result.yearByYear.length > 0) {
-        createSpendingChart(result.yearByYear);
+    const runOutContainer = getElement('summaryMoneyRunsOutContainer');
+    if (!result.moneyLasts && result.ageWhenRunsOut) {
+        runOutContainer.style.display = 'block';
+        setText('summaryMoneyRunsOut', `Age ${result.ageWhenRunsOut} (${result.ageWhenRunsOut - retirementAge} years into retirement)`);
+    } else {
+        runOutContainer.style.display = 'none';
     }
+
+    toggleVisibility('spendingResults', true);
+    if (result.yearByYear?.length > 0) createSpendingChart(result.yearByYear);
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  LONGEVITY PLANNING
+// ══════════════════════════════════════════════════════════════════
+
+/**
+ * Build longevity drawdown data for the lifecycle chart.
+ * @param {number} annualSpending
+ * @returns {Array}
+ */
+function buildLongevityData(annualSpending) {
+    const inputs = readFormInputs();
+    const investmentGrowth = selectedScenarioRate / 100;
+    const targetAge = APP_CONFIG.TARGET_AGE;
+
+    if (!inputs.retirementDate || !inputs.birthDate) return [];
+
+    const years = calculateYearsUntilRetirement(inputs.birthDate, inputs.retirementDate);
+    const projection = calculatePensionProjection(inputs.currentPot, inputs.monthlyContribution, years, investmentGrowth);
+    const startingPot = projection.finalPot;
+
+    const retObj = new Date(inputs.retirementDate);
+    const retirementAge = calculateRetirementAge(inputs.birthDate, inputs.retirementDate);
+    const yearsInRetirement = targetAge - retirementAge;
+
+    const data = [];
+    let balance = startingPot;
+
+    for (let year = 0; year <= yearsInRetirement; year++) {
+        const age = retirementAge + year;
+        const yearDate = new Date(retObj.getFullYear() + year, retObj.getMonth(), retObj.getDate());
+        const growth = balance > 0 ? balance * investmentGrowth : 0;
+        const newBalance = balance + growth - annualSpending;
+
+        data.push({ year, age, date: yearDate, balance: Math.max(0, newBalance), spending: annualSpending, growth });
+        balance = Math.max(0, newBalance);
+        if (balance <= 0) break;
+    }
+    return data;
+}
+
+function calculateLongevityPlan() {
+    try {
+        const inputs = readFormInputs();
+        const annualSpending = readCurrencyInput('retirementAnnualSpending');
+        const investmentGrowth = selectedScenarioRate / 100;
+        const targetAge = APP_CONFIG.TARGET_AGE;
+
+        if (!inputs.retirementDate) { alert('Please calculate your retirement date first'); return; }
+        if (annualSpending <= 0) { alert('Please enter an annual spending amount'); return; }
+
+        const years = calculateYearsUntilRetirement(inputs.birthDate, inputs.retirementDate);
+        const projection = calculatePensionProjection(inputs.currentPot, inputs.monthlyContribution, years, investmentGrowth);
+        const startingPot = projection.finalPot;
+
+        const retObj = new Date(inputs.retirementDate);
+        const retirementAge = calculateRetirementAge(inputs.birthDate, inputs.retirementDate);
+        const yearsInRetirement = targetAge - retirementAge;
+
+        const longevityData = [];
+        let balance = startingPot;
+        for (let year = 0; year <= yearsInRetirement; year++) {
+            const age = retirementAge + year;
+            const yearDate = new Date(retObj.getFullYear() + year, retObj.getMonth(), retObj.getDate());
+            const growth = balance > 0 ? balance * investmentGrowth : 0;
+            const newBalance = balance + growth - annualSpending;
+
+            longevityData.push({ year, age, date: yearDate, balance: Math.max(0, newBalance), spending: annualSpending, growth });
+            balance = Math.max(0, newBalance);
+            if (balance <= 0) break;
+        }
+
+        displayLongevityResults(longevityData, startingPot, annualSpending, retirementAge, targetAge, retObj);
+        createCombinedLifecycleChart(longevityData);
+        createCashFlowChart(annualSpending);
+        getElement('growthChart')?.scrollIntoView({ behavior: 'smooth' });
+
+    } catch (err) {
+        console.error('Longevity planning error:', err);
+        alert('An error occurred during longevity planning. Please check your inputs.');
+    }
+}
+
+function displayLongevityResults(longevityData, startingPot, annualSpending, retirementAge, targetAge, retirementDate) {
+    setText('longevityStartPot', formatCurrency(startingPot));
+    setText('longevityAnnualSpending', formatCurrency(annualSpending));
+    setText('longevityYears', (targetAge - retirementAge) + ' years');
+
+    const finalBalance = longevityData[longevityData.length - 1]?.balance || 0;
+    setText('longevityFinalBalance', formatCurrency(finalBalance));
+
+    const statusEl = getElement('longevityStatus');
+    if (statusEl) {
+        statusEl.textContent = finalBalance > 0 ? 'Money Lasts ✅' : 'Money Depleted ⚠️';
+        statusEl.parentElement.className = finalBalance > 0
+            ? 'summary-item-longevity status-success'
+            : 'summary-item-longevity status-danger';
+    }
+
+    const milestoneAge = getElement('milestoneRetirementAge');
+    if (milestoneAge) milestoneAge.textContent = 'Age ' + retirementAge;
+
+    const milestoneDetail = document.querySelector('.milestone-start .milestone-detail');
+    if (milestoneDetail) milestoneDetail.textContent = retirementDate.toLocaleDateString(APP_CONFIG.LOCALE);
+
+    const age100Date = new Date(retirementDate.getFullYear() + (targetAge - retirementAge), retirementDate.getMonth(), retirementDate.getDate());
+    const age100Detail = document.querySelector('.milestone-end .milestone-detail');
+    if (age100Detail) age100Detail.textContent = age100Date.toLocaleDateString(APP_CONFIG.LOCALE);
+
+    toggleVisibility('milestoneTimeline', true);
+    toggleVisibility('longevitySummary', true);
+    getElement('longevityPlanning')?.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  NARRATIVE BUILDER
+// ══════════════════════════════════════════════════════════════════
+
+function generateLifecycleNarrative(retirementAge, annualSpending, potWeak, potAvg, potStrong, fullWeak, fullAvg, fullStrong, retIdx) {
+    const el = getElement('lifecycleNarrative');
+    if (!el) return;
+
+    function depletionAge(data) {
+        for (let i = retIdx + 1; i < data.length; i++) {
+            if (data[i] !== null && data[i] <= 0) return retirementAge + (i - retIdx);
+        }
+        return null;
+    }
+
+    const fmt = v => '£' + Math.round(v).toLocaleString(APP_CONFIG.LOCALE);
+    const weakDep  = depletionAge(fullWeak);
+    const avgDep   = depletionAge(fullAvg);
+    const strongDep = depletionAge(fullStrong);
+
+    const scenarioCard = (icon, color, label, pot, dep) => {
+        let html = `<div class="narrative-card narrative-${label.toLowerCase().split(' ')[0]}">`;
+        html += `<div class="narrative-icon">${icon}</div><h4>${label}</h4>`;
+        html += `<p>Pot at retirement: <strong>${fmt(pot)}</strong></p>`;
+        if (dep) {
+            html += `<p class="narrative-warning">⚠️ Money runs out at <strong>age ${dep}</strong> — ${100 - dep} years short of age 100</p>`;
+        } else {
+            html += `<p class="narrative-ok">✅ Money lasts to age 100 with ${fmt(annualSpending)}/year spending</p>`;
+        }
+        return html + '</div>';
+    };
+
+    let html = '<div class="narrative-explanation">';
+    html += '<p>The chart above shows three possible outcomes for your pension pot based on different investment growth rates. ';
+    html += 'The <strong style="color:#dc3545">red</strong> band represents a cautious, low-growth market; ';
+    html += 'the <strong style="color:#667eea">blue</strong> band represents a typical, average-growth scenario; ';
+    html += 'and the <strong style="color:#28a745">green</strong> band represents a strong, high-growth market. ';
+    html += 'The taller the combined bar, the more your pot could be worth at that age.</p></div>';
+    html += '<div class="narrative-grid">';
+    html += scenarioCard('🔴', '#dc3545', 'Weak Growth (2%)',    potWeak,   weakDep);
+    html += scenarioCard('🔵', '#667eea', 'Average Growth (5%)', potAvg,    avgDep);
+    html += scenarioCard('🟢', '#28a745', 'Strong Growth (8%)',  potStrong, strongDep);
+    html += '</div>';
+
+    el.innerHTML = html;
+    el.style.display = 'block';
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════════════════════════════
+
+function resetToForm() {
+    ['results', 'retirementSpending', 'spendingToggle', 'lifecycleChartContainer', 'cashFlowChartContainer', 'longevityPlanning']
+        .forEach(id => toggleVisibility(id, false));
+    getElement('calculator-form')?.scrollIntoView({ behavior: 'smooth' });
 }

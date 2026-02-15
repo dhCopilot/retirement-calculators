@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Retirement Age Calc</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        div { margin: 10px 0; }
+        input, select { padding: 8px; font-size: 14px; }
+        button { padding: 10px 20px; font-size: 14px; cursor: pointer; }
+        #output { margin-top: 20px; padding: 10px; background: #f0f0f0; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Test Retirement Age Calculation</h1>
+    
+    <div>
+        <label>Birth Date:</label>
+        <input type="date" id="birthDate" value="1980-05-15">
+    </div>
+    
+    <div>
+        <label>Retirement Age:</label>
+        <select id="retirementAgeSelect">
+            <option value="">Select retirement age...</option>
+            <option value="55">55 years</option>
+            <option value="65">65 years</option>
+            <option value="70">70 years</option>
+        </select>
+    </div>
+    
+    <button id="calculateRetirementDateBtn">Calculate Retirement Date</button>
+    
+    <div>
+        <label>Retirement Date:</label>
+        <input type="date" id="retirementDate">
+    </div>
+    
+    <div id="output"></div>
+    
+    <script>
+        document.getElementById('calculateRetirementDateBtn').addEventListener('click', function() {
+            const birthDateInput = document.getElementById('birthDate').value;
+            const retirementAge = parseInt(document.getElementById('retirementAgeSelect').value);
+            
+            console.log('Birth Date Input:', birthDateInput);
+            console.log('Retirement Age:', retirementAge);
+            
+            if (!birthDateInput) {
+                document.getElementById('output').innerHTML = '<span class="error">Error: Please enter your date of birth first</span>';
+                return;
+            }
+            
+            if (isNaN(retirementAge)) {
+                document.getElementById('output').innerHTML = '<span class="error">Error: Please select a retirement age</span>';
+                return;
+            }
+            
+            const dob = new Date(birthDateInput);
+            console.log('DOB object:', dob);
+            
+            const retirementDate = new Date(
+                dob.getFullYear() + retirementAge,
+                dob.getMonth(),
+                dob.getDate()
+            );
+            console.log('Calculated retirement date:', retirementDate);
+            
+            const year = retirementDate.getFullYear();
+            const month = String(retirementDate.getMonth() + 1).padStart(2, '0');
+            const day = String(retirementDate.getDate()).padStart(2, '0');
+            const dateString = `${year}-${month}-${day}`;
+            
+            console.log('Date string:', dateString);
+            
+            document.getElementById('retirementDate').value = dateString;
+            document.getElementById('output').innerHTML = `<span class="success">✓ Success! Retirement date set to: ${dateString}</span>`;
+        });
+    </script>
+</body>
+</html>

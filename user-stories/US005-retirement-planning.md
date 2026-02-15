@@ -38,14 +38,16 @@
 - [ ] Show: Total spent during retirement
 
 ### Visualization & Display
-- [ ] Create chart: Pot value declining over retirement
-- [ ] Create chart: Annual spending line overlay
-- [ ] Show: ✅ Money lasts OR ⚠️ Money runs out at age X
-- [ ] Show: Remaining balance at life expectancy
-- [ ] Show: Total amount spent in retirement
-- [ ] Show: Real vs nominal values (if inflation enabled)
-- [ ] Display: Inflation-adjusted spending amounts
-- [ ] Mobile responsive layout
+- [x] Create unified chart: Shows accumulation + drawdown on single lifecycle chart
+- [x] Create chart: Pot value declining over retirement (drawdown phase)
+- [x] Create chart: Annual spending impact on pot
+- [x] Show: ✅ Money lasts OR ⚠️ Money runs out at age X
+- [x] Show: Remaining balance at life expectancy
+- [x] Show: Total amount spent in retirement
+- [x] Show: Real vs nominal values (if inflation enabled)
+- [x] Display: Inflation-adjusted spending amounts
+- [x] Mobile responsive layout
+- [x] **Note**: Full lifecycle visualization shown in unified chart (see US#6)
 
 ## Files to Create
 - `src/index.html` (form inputs, results cards)

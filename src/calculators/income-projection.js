@@ -1,7 +1,11 @@
 /**
  * Income Projection Calculator
+ * Calculates sustainable annual income from a pension pot using
+ * the 4% safe withdrawal rate and UK tax-free lump sum rules.
+ *
+ * @module calculators/income-projection
  * @user-story US#3 - Income Projection
- * @version 0.2.0
+ * @version 0.4.0
  */
 
 const SAFE_WITHDRAWAL_RATE = 0.04; // 4% per annum

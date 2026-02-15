@@ -1,7 +1,10 @@
 /**
  * Inflation Calculator
+ * Functions for adjusting values between real (today's) and nominal (future) pounds.
+ *
+ * @module calculators/inflation-calculator
  * @user-story US#2 - Inflation Handling
- * @version 0.3.0
+ * @version 0.4.0
  */
 
 function adjustForInflation(nominalValue, yearsAhead, annualInflationRate = 0.025) {

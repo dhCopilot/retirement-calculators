@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Suite - NestMapOS Pension Calculator</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="professional-forms.css">
+    <style>
+        /* Test page specific styles */
+        .test-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px 16px;
+            text-align: center;
+            border: 1px solid #e8ecf1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .stat-card .stat-number {
+            font-size: 2em;
+            font-weight: 800;
+            color: #1e3c72;
+        }
+        .stat-card .stat-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 4px;
+        }
+        .stat-card.pass .stat-number { color: #28a745; }
+        .stat-card.suites .stat-number { color: #667eea; }
+
+        .suite-section {
+            background: white;
+            border-radius: 12px;
+            margin: 28px 0;
+            border: 1px solid #e8ecf1;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        .suite-header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 20px 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        .suite-header:hover {
+            background: linear-gradient(135deg, #2a5298, #1e3c72);
+        }
+        .suite-header h3 {
+            margin: 0;
+            font-size: 1.15em;
+        }
+        .suite-header .suite-meta {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-size: 0.85em;
+        }
+        .suite-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .suite-toggle {
+            font-size: 1.2em;
+            transition: transform 0.2s;
+        }
+        .suite-section.collapsed .suite-toggle {
+            transform: rotate(-90deg);
+        }
+        .suite-section.collapsed .suite-body {
+            display: none;
+        }
+        .suite-body {
+            padding: 0;
+        }
+        .suite-purpose {
+            padding: 16px 24px;
+            background: #f0f4ff;
+            border-bottom: 1px solid #e8ecf1;
+            font-size: 0.92em;
+            color: #444;
+            line-height: 1.5;
+        }
+        .suite-purpose strong {
+            color: #1e3c72;
+        }
+        .suite-file {
+            padding: 8px 24px;
+            background: #fafbfc;
+            border-bottom: 1px solid #e8ecf1;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.82em;
+            color: #667eea;
+        }
+
+        .group-header {
+            padding: 12px 24px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            font-weight: 700;
+            color: #1e3c72;
+            font-size: 0.95em;
+        }
+
+        .test-row {
+            display: grid;
+            grid-template-columns: 36px 1fr;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.15s;
+        }
+        .test-row:last-child {
+            border-bottom: none;
+        }
+        .test-row:hover {
+            background: #f8f9ff;
+        }
+        .test-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 0;
+            font-size: 1.1em;
+        }
+        .test-detail {
+            padding: 14px 16px 14px 0;
+        }
+        .test-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            font-size: 0.93em;
+        }
+        .test-why {
+            font-size: 0.84em;
+            color: #666;
+            line-height: 1.45;
+            margin-bottom: 4px;
+        }
+        .test-expected {
+            font-size: 0.82em;
+            color: #28a745;
+            font-weight: 500;
+        }
+        .test-expected code {
+            background: #e6f4ea;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+        }
+
+        .legend-bar {
+            display: flex;
+            gap: 20px;
+            padding: 14px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 0.88em;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e8ecf1;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.88em;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.15s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            border-color: #667eea;
+            color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .expand-controls {
+            display: flex;
+            gap: 10px;
+            margin: 8px 0;
+        }
+        .expand-btn {
+            padding: 6px 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.82em;
+            color: #555;
+        }
+        .expand-btn:hover {
+            background: #f0f4ff;
+            border-color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .test-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .suite-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NestMapOS</h1>
+            <div class="slogan-container">
+                <span class="slogan-icon">🧪</span>
+                <p class="subtitle">Test Suite Documentation</p>
+                <span class="slogan-subtext">94 Tests · 6 Suites · 100% Pass Rate</span>
+            </div>
+            <p class="version">v0.4.1</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-links" style="display:flex;gap:12px;justify-content:center;margin:12px 0;">
+            <a href="index.html" class="nav-link" style="color:#667eea;text-decoration:none;font-weight:600;">← Calculator</a>
+            <a href="functionality.html" class="nav-link" style="color:#667eea;text-decoration:none;font-weight:600;">📋 Features</a>
+        </nav>
+
+        <!-- Stats Overview -->
+        <div class="test-stats">
+            <div class="stat-card pass">
+                <div class="stat-number">94</div>
+                <div class="stat-label">Tests Passing</div>
+            </div>
+            <div class="stat-card suites">
+                <div class="stat-number">6</div>
+                <div class="stat-label">Test Suites</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Failures</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color:#f59e0b;">&lt;1s</div>
+                <div class="stat-label">Execution Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color:#667eea;">Jest</div>
+                <div class="stat-label">Test Framework</div>
+            </div>
+        </div>
+
+        <div class="legend-bar">
+            <span style="font-weight:600;color:#333;">Legend:</span>
+            <span class="legend-item">✅ Passing</span>
+            <span class="legend-item">📐 Structure / API contract</span>
+            <span class="legend-item">🔢 Mathematical accuracy</span>
+            <span class="legend-item">🛡️ Edge case / guard</span>
+            <span class="legend-item">🔗 Integration</span>
+        </div>
+
+        <div class="expand-controls">
+            <button class="expand-btn" onclick="toggleAll(false)">▼ Expand All</button>
+            <button class="expand-btn" onclick="toggleAll(true)">▲ Collapse All</button>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!--  SUITE 1: Pension Projection                           -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="suite-section" data-suite="pension">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <h3>1. Pension Projection Calculator</h3>
+                <div class="suite-meta">
+                    <span class="suite-badge">10 tests</span>
+                    <span class="suite-toggle">▼</span>
+                </div>
+            </div>
+            <div class="suite-body">
+                <div class="suite-file">tests/pension-projection.test.js → src/calculators/pension-projection.js</div>
+                <div class="suite-purpose">
+                    <strong>Why this suite exists:</strong> Validates the core compound-growth engine that projects a pension pot forward from today to retirement. This is the foundation of all calculations — if growth projections are wrong, every downstream result (income, drawdown, charts) breaks. Tests cover compound interest with monthly contributions over multiple years, so mathematical precision is critical.
+                </div>
+
+                <div class="group-header">Basic Calculations</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should return correct structure</div>
+                        <div class="test-why">📐 <strong>Why:</strong> Ensures the function returns all expected properties (<code>finalPot</code>, <code>yearByYear</code>, <code>totalContributed</code>, <code>growthAmount</code>, <code>annualGrowthRate</code>) so downstream consumers don't break from missing fields.</div>
+                        <div class="test-expected">Expected: Object has all 5 required properties</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should calculate with default growth rate of 5%</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Verifies the default parameter works correctly. If no growth rate is passed, it should default to 5% (UK historical average). The final pot must be greater than the starting £10,000.</div>
+                        <div class="test-expected">Expected: <code>annualGrowthRate === 0.05</code>, <code>finalPot > 10000</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should have correct number of yearly entries</div>
+                        <div class="test-why">📐 <strong>Why:</strong> The year-by-year array is used to build charts. If it has wrong number of entries, the lifecycle chart will have misaligned labels or missing data points.</div>
+                        <div class="test-expected">Expected: <code>yearByYear.length === 10</code> for a 10-year projection</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should calculate total contributed correctly</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Total contributions = initial pot + (monthly × 12 × years). This is shown on the results card and used to calculate the growth percentage. A bug here misleads users about how much of their pot is growth vs. savings.</div>
+                        <div class="test-expected">Expected: <code>totalContributed === 10000 + (500 × 12 × 10) = £70,000</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">Growth Calculations</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should grow with positive growth rate</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Core compound interest validation — the final pot must exceed total contributions (i.e. growth amount > 0). If this fails, the compound growth formula is broken.</div>
+                        <div class="test-expected">Expected: <code>finalPot > totalContributed</code>, <code>growthAmount > 0</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should not grow with 0% growth rate</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Edge case — at 0% growth, the pot should exactly equal total contributions with zero growth. This guards against floating-point rounding errors in the monthly compounding loop.</div>
+                        <div class="test-expected">Expected: <code>finalPot === totalContributed</code>, <code>growthAmount === 0</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">year by year pot should increase over time</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> With positive contributions and positive growth, each year's pot value must be strictly greater than the previous year. This ensures the chart shows a monotonically increasing accumulation curve.</div>
+                        <div class="test-expected">Expected: <code>yearByYear[i].pot > yearByYear[i-1].pot</code> for all years</div>
+                    </div>
+                </div>
+
+                <div class="group-header">Edge Cases</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle zero monthly contribution</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Some users have a pension pot but aren't currently contributing. The calculator must still work — growth applies to the existing pot only, and totalContributed equals just the initial pot.</div>
+                        <div class="test-expected">Expected: <code>finalPot > 10000</code>, <code>totalContributed === 10000</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle zero initial pot</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> A user starting from scratch (£0 pot) should still get a valid projection from monthly contributions alone. Must not produce NaN or negative values.</div>
+                        <div class="test-expected">Expected: <code>finalPot > 0</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle 1 year projection</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Minimum viable case — someone 1 year from retirement. The year-by-year array should have exactly 1 entry and the pot must still grow from 12 months of contributions + growth.</div>
+                        <div class="test-expected">Expected: <code>yearByYear.length === 1</code>, <code>finalPot > 10000</code></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!--  SUITE 2: Income Projection                            -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="suite-section" data-suite="income">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <h3>2. Income Projection Calculator</h3>
+                <div class="suite-meta">
+                    <span class="suite-badge">10 tests</span>
+                    <span class="suite-toggle">▼</span>
+                </div>
+            </div>
+            <div class="suite-body">
+                <div class="suite-file">tests/income-projection.test.js → src/calculators/income-projection.js</div>
+                <div class="suite-purpose">
+                    <strong>Why this suite exists:</strong> Validates the UK pension income rules — the 25% tax-free lump sum, the £268,275 cap, and the 4% safe withdrawal rate (SWR). These are specific UK regulatory figures that must be exact. Getting any of these wrong gives users dangerously incorrect retirement income expectations.
+                </div>
+
+                <div class="group-header">Basic Calculations</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should return correct structure</div>
+                        <div class="test-why">📐 <strong>Why:</strong> Ensures all 4 properties are returned: <code>taxFreeLumpSum</code>, <code>drawdownPot</code>, <code>annualIncome</code>, <code>monthlyIncome</code>. The results card displays all of these — any missing field would crash the UI.</div>
+                        <div class="test-expected">Expected: Object has all 4 required properties</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should calculate tax-free lump sum at 25%</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> UK pension rules allow a 25% tax-free lump sum. For a £100,000 pot, this must be exactly £25,000. This is a hard regulatory rule — not an estimate.</div>
+                        <div class="test-expected">Expected: <code>taxFreeLumpSum === 25000</code> (25% of £100,000)</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should apply max tax-free lump sum cap</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> UK law caps the tax-free lump sum at £268,275 regardless of pot size. For a £2M pot, 25% would be £500,000 — but the cap limits it to £268,275. This is the most important pension rule to get right.</div>
+                        <div class="test-expected">Expected: <code>taxFreeLumpSum === 268275</code> (UK legal maximum)</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should calculate remaining drawdown pot correctly</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> The drawdown pot = total pot minus the tax-free lump sum. Income is calculated from this reduced pot, not the full pot. Getting this wrong overstates retirement income by up to 25%.</div>
+                        <div class="test-expected">Expected: <code>drawdownPot === 100000 - 25000 = 75000</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should apply 4% safe withdrawal rate</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> The 4% SWR (Bill Bengen's research) is the industry standard for sustainable retirement income. Annual income should be 4% of the drawdown pot (after lump sum removal).</div>
+                        <div class="test-expected">Expected: <code>annualIncome ≈ 75000 × 0.04 = £3,000</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should calculate monthly income correctly</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Monthly income = annual ÷ 12. Users think in monthly terms not annual, so this must be precise.</div>
+                        <div class="test-expected">Expected: <code>monthlyIncome ≈ annualIncome / 12</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">Edge Cases</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle small pots</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> A £1,000 pot should still produce valid results — lump sum of £250, small but positive income. Must not error or produce negative values.</div>
+                        <div class="test-expected">Expected: <code>taxFreeLumpSum === 250</code>, <code>annualIncome > 0</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle zero pot</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Edge case — £0 pot must produce £0 income without errors. Guards against division-by-zero or NaN cascading through the UI.</div>
+                        <div class="test-expected">Expected: <code>annualIncome === 0</code>, <code>monthlyIncome === 0</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle very large pots</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> A £10,000,000 pot must still cap the lump sum at £268,275. Tests that the cap logic works even at extreme values above the UK limit.</div>
+                        <div class="test-expected">Expected: <code>taxFreeLumpSum === 268275</code> (capped at limit)</div>
+                    </div>
+                </div>
+
+                <div class="group-header">Percentage Calculations</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">income should be 3% of original pot (after tax-free)</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> With a £1,000,000 pot: drawdown = 75% of pot × 4% SWR = 3% of original pot. This cross-checks the combined effect of lump sum + SWR. Income should be £30,000/year.</div>
+                        <div class="test-expected">Expected: <code>annualIncome ≈ 1000000 × 0.75 × 0.04 = £30,000</code></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!--  SUITE 3: Inflation Calculator                         -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="suite-section" data-suite="inflation">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <h3>3. Inflation Calculator</h3>
+                <div class="suite-meta">
+                    <span class="suite-badge">12 tests</span>
+                    <span class="suite-toggle">▼</span>
+                </div>
+            </div>
+            <div class="suite-body">
+                <div class="suite-file">tests/inflation-calculator.test.js → src/calculators/inflation-calculator.js</div>
+                <div class="suite-purpose">
+                    <strong>Why this suite exists:</strong> Inflation erodes purchasing power — £100,000 in 10 years is worth less than £100,000 today. This suite validates the conversion between nominal (future) and real (today's) values. Without correct inflation adjustment, the calculator would give users a false sense of their retirement purchasing power. Tests cover the mathematical formula <code>realValue = futureValue / (1 + r)^n</code> and its inverse.
+                </div>
+
+                <div class="group-header">Real Value Conversion</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should convert future value to real value</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Core inflation math: £100,000 in 10 years at 2.5% inflation should be worth about £78,120 in today's money. Uses formula: <code>100000 / (1.025)^10</code>.</div>
+                        <div class="test-expected">Expected: <code>realValue < 100000</code>, <code>realValue ≈ 100000 / 1.025^10</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle zero inflation</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> With 0% inflation, real value = nominal value exactly. Guards against division by zero or incorrect identity case.</div>
+                        <div class="test-expected">Expected: <code>realValue === 100000</code> (unchanged)</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle zero years</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> With 0 years ahead, (1+r)^0 = 1, so value should remain unchanged. Tests the boundary condition for someone already at retirement.</div>
+                        <div class="test-expected">Expected: <code>realValue === 100000</code> (unchanged)</div>
+                    </div>
+                </div>
+
+                <div class="group-header">Nominal Value Inflation</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should inflate real value to future value</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> The inverse operation — what will £50,000 in today's money cost in 10 years at 2.5% inflation? Uses formula: <code>50000 × (1.025)^10</code>.</div>
+                        <div class="test-expected">Expected: <code>nominalValue > 50000</code>, <code>nominalValue ≈ 50000 × 1.025^10</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should be inverse of real value conversion</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Mathematical consistency check: converting to real then back to nominal should return the original value. If <code>inflateValue(adjustForInflation(x)) ≠ x</code>, one of the formulas is wrong.</div>
+                        <div class="test-expected">Expected: <code>inflateValue(adjustForInflation(100000)) ≈ 100000</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">Income Adjustments</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should provide both real and nominal income</div>
+                        <div class="test-why">📐 <strong>Why:</strong> The UI shows "real" and "nominal" income side-by-side. This test ensures all 4 properties are present: <code>realAnnualIncome</code>, <code>nominalAnnualIncome</code>, <code>realMonthlyIncome</code>, <code>nominalMonthlyIncome</code>.</div>
+                        <div class="test-expected">Expected: Object has all 4 income properties</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should calculate correct real and nominal income</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Real annual income should equal the base amount (today's value). Nominal should be inflated. Monthly = annual ÷ 12 for both. Tests the full income conversion pipeline.</div>
+                        <div class="test-expected">Expected: <code>realAnnualIncome === 40000</code>, <code>nominalAnnualIncome > 40000</code>, <code>realMonthlyIncome ≈ 3333.33</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle zero years until retirement</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> At 0 years, real and nominal are identical — inflation hasn't had time to act. Guards against edge case for someone already retired.</div>
+                        <div class="test-expected">Expected: <code>realAnnualIncome === nominalAnnualIncome</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">Year-by-Year Adjustments</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should include both real and nominal values</div>
+                        <div class="test-why">📐 <strong>Why:</strong> Year-by-year data feeds into charts that can show both views. Each entry must have <code>realPot</code>, <code>nominalPot</code>, <code>realContributions</code>, <code>nominalContributions</code>.</div>
+                        <div class="test-expected">Expected: Each year-by-year entry has all 4 properties</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should show real values adjusted for inflation impact</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> For future years, real pot values must be less than nominal — inflation reduces purchasing power over time. Year 1's real pot should be slightly less, year 3 more noticeably.</div>
+                        <div class="test-expected">Expected: <code>result[1].realPot < result[1].nominalPot</code>, <code>result[2].realPot < result[2].nominalPot</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">High Inflation Scenarios</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle 5% inflation</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> At 5% inflation over 10 years, £100,000 is worth only about £61,391. This tests the formula with higher-than-default inflation to verify accuracy at the upper bound.</div>
+                        <div class="test-expected">Expected: <code>realValue ≈ 61391</code> (100000 / 1.05^10)</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle very high inflation</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Even at 10% inflation (extreme scenario), the formula must still produce a valid positive number less than the original value. Tests robustness at extremes.</div>
+                        <div class="test-expected">Expected: <code>realValue > 0</code> and <code>realValue < 100000</code></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!--  SUITE 4: Retirement Income                            -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="suite-section" data-suite="retirement">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <h3>4. Retirement Income & Spending Plan</h3>
+                <div class="suite-meta">
+                    <span class="suite-badge">15 tests</span>
+                    <span class="suite-toggle">▼</span>
+                </div>
+            </div>
+            <div class="suite-body">
+                <div class="suite-file">tests/retirement-income.test.js → src/calculators/retirement-income.js</div>
+                <div class="suite-purpose">
+                    <strong>Why this suite exists:</strong> Validates the spending analysis engine — can a user's pension pot sustain their desired spending until a target age? Covers two modes: (A) "I want to spend £X/year — will my money last?" and (B) "What's the maximum I can spend sustainably?" This is the most user-facing financial advice the calculator gives, so accuracy is paramount. Also tests the retirement status helper that generates ✅/⚠️ indicators.
+                </div>
+
+                <div class="group-header">Spending Plan — Basic</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should return correct structure for spending plan</div>
+                        <div class="test-why">📐 <strong>Why:</strong> The spending plan result must include <code>mode</code>, <code>moneyLasts</code>, <code>finalBalance</code>, <code>totalSpent</code>, and <code>yearByYear</code>. The UI reads all of these to build the spending results display.</div>
+                        <div class="test-expected">Expected: <code>mode === 'spending-plan'</code>, all 5 properties present</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should calculate year-by-year data</div>
+                        <div class="test-why">📐 <strong>Why:</strong> Year-by-year data feeds the spending chart. Each entry must have <code>year</code>, <code>potAtStart</code>, <code>annualSpend</code>, <code>potAtEnd</code> — missing any field would crash the chart builder.</div>
+                        <div class="test-expected">Expected: Array length > 0, each entry has all 4 properties</div>
+                    </div>
+                </div>
+
+                <div class="group-header">Money Lasting Duration</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should indicate when money lasts throughout retirement</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> A £1,000,000 pot spending £30,000/year at 5% growth should easily last. This validates the "happy path" — money lasting the full retirement with a positive final balance.</div>
+                        <div class="test-expected">Expected: <code>moneyLasts === true</code>, <code>finalBalance > 0</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should indicate when money runs out</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> A £10,000 pot spending £50,000/year at 0% growth must flag that money runs out. The <code>ageWhenRunsOut</code> field triggers the ⚠️ warning in the UI.</div>
+                        <div class="test-expected">Expected: <code>moneyLasts === false</code>, <code>ageWhenRunsOut</code> is defined</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should calculate correct age when money runs out</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> When money depletes, the reported age must be greater than 0 (i.e. a valid age). This prevents the UI from displaying "Money runs out at age 0" or negative ages.</div>
+                        <div class="test-expected">Expected: <code>ageWhenRunsOut > 0</code> (when money doesn't last)</div>
+                    </div>
+                </div>
+
+                <div class="group-header">Total Spending</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should sum total spent over retirement</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Total spending is displayed on the summary card. It must be positive and reasonable — a rough cross-check against annual spend × years of retirement.</div>
+                        <div class="test-expected">Expected: <code>totalSpent > 0</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">Inflation Handling</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should apply inflation to spending amounts</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> With 3% inflation, year 2's spending should be higher than year 2 without inflation — you need more £ to buy the same goods. This validates that inflation is applied iteratively to annual spending.</div>
+                        <div class="test-expected">Expected: Year 2 spending with inflation > year 2 spending without inflation</div>
+                    </div>
+                </div>
+
+                <div class="group-header">Growth During Retirement</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should apply investment growth to remaining pot</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Even in retirement, the remaining pot earns investment returns. At 5% growth vs. 0% growth, the year-1 ending pot should be noticeably higher. Tests that growth is properly applied during drawdown, not just accumulation.</div>
+                        <div class="test-expected">Expected: Year 1 pot-at-end with 5% growth > year 1 pot-at-end with 0% growth</div>
+                    </div>
+                </div>
+
+                <div class="group-header">Maximum Sustainable Spend</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should return maximum annual and monthly spend</div>
+                        <div class="test-why">📐 <strong>Why:</strong> Mode B — "tell me the max I can spend." Must return both <code>maxAnnualSpend</code> and <code>maxMonthlySpend</code> (annual ÷ 12). These are the headline numbers the user sees.</div>
+                        <div class="test-expected">Expected: <code>maxMonthlySpend ≈ maxAnnualSpend / 12</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should find sustainable spend that lasts entire retirement</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> The maximum sustainable spend must actually be sustainable — the associated projection must show money lasting. If the binary search algorithm overshoots, this test catches it.</div>
+                        <div class="test-expected">Expected: <code>projection.moneyLasts === true</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should increase with larger starting pot</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Doubling the pot should increase the maximum sustainable spend. A £600k pot should allow more spending than a £300k pot. Tests the proportionality of the binary search result.</div>
+                        <div class="test-expected">Expected: Max spend(£600k) > max spend(£300k)</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should decrease with longer retirement</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> A longer retirement means money must last more years. Retiring to age 95 requires lower annual spending than retiring to age 75 from the same pot.</div>
+                        <div class="test-expected">Expected: Max spend(to 75) > max spend(to 95)</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should increase maximum spend with higher growth rates</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Higher growth (5%) means the pot earns more during drawdown, allowing higher spending. Tests that the maximum sustainable spend increases with better market conditions.</div>
+                        <div class="test-expected">Expected: Max spend(5% growth) ≥ max spend(2% growth)</div>
+                    </div>
+                </div>
+
+                <div class="group-header">Retirement Status Helper</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should return success status when money lasts</div>
+                        <div class="test-why">📐 <strong>Why:</strong> The <code>getRetirementStatus()</code> helper maps results to UI indicators. When money lasts, it must return <code>status: 'success'</code> and <code>icon: '✅'</code> — used to colour the status card green.</div>
+                        <div class="test-expected">Expected: <code>status === 'success'</code>, <code>icon === '✅'</code>, message contains "last"</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should return warning status when money runs out</div>
+                        <div class="test-why">📐 <strong>Why:</strong> When money runs out at age 85, the helper must return <code>status: 'warning'</code>, <code>icon: '⚠️'</code>, and the message must mention age 85. Used to colour the status card amber/red.</div>
+                        <div class="test-expected">Expected: <code>status === 'warning'</code>, <code>icon === '⚠️'</code>, message contains "85"</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!--  SUITE 5: Drawdown & Shortfall                         -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="suite-section" data-suite="drawdown">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <h3>5. Drawdown Shortfall Calculations</h3>
+                <div class="suite-meta">
+                    <span class="suite-badge">14 tests</span>
+                    <span class="suite-toggle">▼</span>
+                </div>
+            </div>
+            <div class="suite-body">
+                <div class="suite-file">tests/drawdown-shortfall.test.js → src/utils/drawdown.js</div>
+                <div class="suite-purpose">
+                    <strong>Why this suite exists:</strong> Validates the drawdown simulation — annually withdrawing money from a pension pot with growth. Tests the critical shortfall detection: when your pot can't cover your desired spending, how much is unfunded? This drives the red "shortfall" band on the lifecycle and cash-flow charts. Also validates the stacking-band algorithm that splits 3 overlapping scenario values into incremental layers for Chart.js stacked bars.
+                </div>
+
+                <div class="group-header">No Shortfall (Pot Covers Spending)</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should have zero shortfall when pot easily covers spending</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> A £1M pot spending £25k/year at 5% growth should have zero shortfall every year. This validates the "happy path" where growth exceeds spending and the pot grows indefinitely.</div>
+                        <div class="test-expected">Expected: <code>shortfall === 0</code>, <code>funded === 25000</code>, <code>potAfter > 0</code> for all years</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should grow pot when growth exceeds spending</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> 5% of £1M = £50k growth, minus £25k spending = net gain of £25k. Year 1 ending pot should exceed £1M. This validates that growth is applied before spending is deducted.</div>
+                        <div class="test-expected">Expected: <code>results[0].potAfter > 1000000</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">Full Shortfall (Pot Depleted)</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should show full shortfall once pot is zero</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> £10k pot, £50k spending, 0% growth: Year 1 has £40k shortfall (£10k funded). Years 2+ have full £50k shortfall. Tests the transition from partial to full shortfall.</div>
+                        <div class="test-expected">Expected: Year 1: <code>shortfall === 40000</code>, <code>funded === 10000</code>. Year 2+: <code>shortfall === 50000</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should show full annual spending as shortfall when pot is zero</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Starting with £0 pot — every year has 100% shortfall. Guards against negative balance or NaN when pot is already empty.</div>
+                        <div class="test-expected">Expected: <code>shortfall === 30000</code>, <code>funded === 0</code>, <code>potAfter === 0</code> for all years</div>
+                    </div>
+                </div>
+
+                <div class="group-header">Partial Shortfall (Transition Year)</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should show partial shortfall when pot partially covers spending</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> £15k pot, £25k spending, no growth: Year 1 can fund £15k but is £10k short. Year 2 is fully unfunded. Tests the exact transition year calculation.</div>
+                        <div class="test-expected">Expected: Year 1: <code>shortfall === 10000</code>, <code>funded === 15000</code>. Year 2: <code>shortfall === 25000</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should show partial shortfall with growth in transition year</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> £20k pot at 5% growth: available = £20k + £1k growth = £21k. Spending £25k means £4k shortfall. Tests that growth is correctly applied before shortfall calculation.</div>
+                        <div class="test-expected">Expected: <code>shortfall === 4000</code>, <code>funded === 21000</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">shortfall + funded should equal annual spending</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> For every year, <code>shortfall + funded = annualSpending</code>. This is an accounting identity — money is either funded by the pot or it's a shortfall. No money can disappear.</div>
+                        <div class="test-expected">Expected: <code>shortfall + funded === 25000</code> for every year</div>
+                    </div>
+                </div>
+
+                <div class="group-header">Three-Scenario Comparison</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">strong scenario should last longer than weak</div>
+                        <div class="test-why">🔗 <strong>Why:</strong> At 8% growth, money lasts longer than at 2% — or never has shortfall at all. Tests the relative ordering of scenario outcomes which must always hold true.</div>
+                        <div class="test-expected">Expected: Strong first-shortfall year > weak first-shortfall year (or no shortfall)</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">weak scenario shortfall should start earliest</div>
+                        <div class="test-why">🔗 <strong>Why:</strong> The weak (2%) scenario must always deplete before average (5%). If the ordering is wrong, the chart bands would cross over and confuse users.</div>
+                        <div class="test-expected">Expected: Weak shortfall start year ≤ average shortfall start year</div>
+                    </div>
+                </div>
+
+                <div class="group-header">Stacking Band Calculations</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">bands should sum to absolute values</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Chart.js stacks bands additively: <code>bandWeak + bandAvgExtra + bandStrongExtra = strong</code>. If this identity breaks, the chart visually misrepresents the data — the top of the stacked bar wouldn't match the Strong scenario total.</div>
+                        <div class="test-expected">Expected: For each index, <code>bandWeak[i] + bandAvgExtra[i] + bandStrongExtra[i] === strong[i]</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">bands should never be negative</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Negative band values would cause Chart.js to render bars going below the axis, breaking the visual. All bands must be ≥ 0 even when scenarios cross over (e.g. weak > average at depletion).</div>
+                        <div class="test-expected">Expected: All <code>bandWeak[i] ≥ 0</code>, <code>bandAvgExtra[i] ≥ 0</code>, <code>bandStrongExtra[i] ≥ 0</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle null values in pre-retirement phase</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> During the accumulation phase, drawdown values are null (spending hasn't started). The stacking function must propagate nulls correctly so Chart.js renders empty bars pre-retirement.</div>
+                        <div class="test-expected">Expected: <code>null</code> inputs produce <code>null</code> outputs. Non-null: bandWeak=100, bandAvgExtra=20, bandStrongExtra=30</div>
+                    </div>
+                </div>
+
+                <div class="group-header">Integration: Projection → Drawdown</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should calculate correct retirement pot then drawdown</div>
+                        <div class="test-why">🔗 <strong>Why:</strong> End-to-end test: project a pot forward (£100k + £500/month for 10 years at 5%), then draw it down at £30k/year. Tests the full pipeline from accumulation to drawdown, ensuring the shortfall identity holds for all 30 years.</div>
+                        <div class="test-expected">Expected: <code>finalPot > 100000</code>, drawdown has 30 entries, <code>shortfall + funded ≈ 30000</code> each year</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">shortfall should match between weak and strong scenarios</div>
+                        <div class="test-why">🔗 <strong>Why:</strong> Total shortfall over 40 years must be worst for weak (2%), middle for average (5%), and least for strong (8%). Tests the relative financial outcome across all 3 scenarios simultaneously.</div>
+                        <div class="test-expected">Expected: Total shortfall: <code>weak ≥ average ≥ strong</code></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!--  SUITE 6: Utility Modules                              -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="suite-section" data-suite="utils">
+            <div class="suite-header" onclick="toggleSuite(this)">
+                <h3>6. Utility Modules (Formatting, Dates, Drawdown Engine, Config)</h3>
+                <div class="suite-meta">
+                    <span class="suite-badge">33 tests</span>
+                    <span class="suite-toggle">▼</span>
+                </div>
+            </div>
+            <div class="suite-body">
+                <div class="suite-file">tests/utils.test.js → src/config.js, src/utils/formatting.js, src/utils/date-utils.js, src/utils/drawdown.js</div>
+                <div class="suite-purpose">
+                    <strong>Why this suite exists:</strong> Validates the extracted utility modules created during the v0.4.0 enterprise refactoring. These small, pure functions are used everywhere — formatting currency, computing ages, running drawdown simulations. Testing them in isolation ensures they work correctly before being consumed by the larger calculators and chart builders. Also validates the <code>APP_CONFIG</code> configuration object's immutability and values.
+                </div>
+
+                <div class="group-header">unformatNumber</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should remove commas from formatted string</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Input fields display "600,000" but the calculator needs <code>600000</code> as a number. This function strips commas before parsing.</div>
+                        <div class="test-expected">Expected: <code>unformatNumber('600,000') === '600000'</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle string without commas</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Not all inputs have commas — "50000" should pass through unchanged. Guards against introducing bugs for simple numeric strings.</div>
+                        <div class="test-expected">Expected: <code>unformatNumber('50000') === '50000'</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle non-string input</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Defensive guard — what if a number is passed instead of a string? It should coerce gracefully to "12345" rather than crashing.</div>
+                        <div class="test-expected">Expected: <code>unformatNumber(12345) === '12345'</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">formatNumberWithCommas</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should add thousands separators</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Displays 1234567 as "1,234,567" in text inputs for readability. UK users expect comma-separated thousands.</div>
+                        <div class="test-expected">Expected: <code>formatNumberWithCommas(1234567) === '1,234,567'</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should not format numbers under 1000</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> "999" should stay as "999" — no leading comma or other artefact. Tests the boundary below 1000 where no separator is needed.</div>
+                        <div class="test-expected">Expected: <code>formatNumberWithCommas(999) === '999'</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">formatCurrency</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should format with £ symbol and 2 decimals</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Currency display throughout the app uses this. 1234.5 must render as "£1,234.50" — correct symbol, comma separator, 2 decimal places.</div>
+                        <div class="test-expected">Expected: <code>formatCurrency(1234.5) === '£1,234.50'</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle zero</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Zero must render as "£0.00" not "" or "£NaN". Many edge cases produce zero values (empty pot, zero income).</div>
+                        <div class="test-expected">Expected: <code>formatCurrency(0) === '£0.00'</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">formatChartCurrency</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should abbreviate thousands as k</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Chart Y-axis labels abbreviate large numbers for readability. 250000 → "£250k". Without this, axis labels would overflow.</div>
+                        <div class="test-expected">Expected: <code>formatChartCurrency(250000) === '£250k'</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should abbreviate millions as M</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> For large pots, 1500000 → "£1.5M". Tests the million-level abbreviation logic with a mid-range value that needs 1 decimal place.</div>
+                        <div class="test-expected">Expected: <code>formatChartCurrency(1500000) === '£1.5M'</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">parseCurrencyInput</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should parse formatted currency string</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> When reading from the DOM, input value "600,000" must parse to the number 600000. This is the inverse of formatNumberWithCommas.</div>
+                        <div class="test-expected">Expected: <code>parseCurrencyInput('600,000') === 600000</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should return 0 for invalid input</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Non-numeric input like "abc" must return 0 rather than NaN. Prevents NaN from cascading through calculations and crashing charts.</div>
+                        <div class="test-expected">Expected: <code>parseCurrencyInput('abc') === 0</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should return 0 for empty string</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Empty input (user cleared the field) must return 0. Prevents <code>parseFloat('')</code> returning NaN.</div>
+                        <div class="test-expected">Expected: <code>parseCurrencyInput('') === 0</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">calculateExactAge</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should calculate exact age with years, months, days</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> The "You are currently 52 years, 5 months, and 14 days old" display requires precise date arithmetic. Tests DOB 1990-01-01 against June 15, 2025 = 35 years, 5 months, 14 days.</div>
+                        <div class="test-expected">Expected: <code>{ years: 35, months: 5, days: 14 }</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle birthday not yet occurred this year</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> If reference date is Jan 1 but birthday is June 15, the person hasn't turned 35 yet — they're still 34. Tests the month/day boundary logic that adjusts for pre-birthday dates.</div>
+                        <div class="test-expected">Expected: <code>years === 34</code> (birthday hasn't happened yet)</div>
+                    </div>
+                </div>
+
+                <div class="group-header">calculateCurrentAge</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should return whole years</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Many calculations use whole-year age. For DOB 1990-01-01 at current date, age should be a number between 30 and 40 (tested relative to runtime).</div>
+                        <div class="test-expected">Expected: <code>typeof age === 'number'</code>, <code>30 < age < 40</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">calculateRetirementAge</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should compute difference in years</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Retirement age = retirement year - birth year. Born 1972, retiring 2032 = age 60. Used to label chart axes and calculate drawdown duration.</div>
+                        <div class="test-expected">Expected: <code>calculateRetirementAge('1972-01-01', '2032-01-01') === 60</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle Date objects</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> The function can receive either string dates or Date objects. Must handle both without crashing. Born 1972, retiring 2037 = 65.</div>
+                        <div class="test-expected">Expected: <code>calculateRetirementAge(new Date('1972'), new Date('2037')) === 65</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">formatAge</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should format as readable string</div>
+                        <div class="test-why">📐 <strong>Why:</strong> Converts the age object to the display string "52 years, 5 months, and 14 days old" shown under the DOB input. Must match exact format with commas and "and".</div>
+                        <div class="test-expected">Expected: <code>'52 years, 5 months, and 14 days old'</code></div>
+                    </div>
+                </div>
+
+                <div class="group-header">simulateDrawdown (Engine)</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should return correct structure</div>
+                        <div class="test-why">📐 <strong>Why:</strong> The drawdown engine must return <code>results</code> (array), <code>finalBalance</code>, <code>moneyLasts</code> (boolean), and <code>depletionAge</code>. All chart builders depend on this structure.</div>
+                        <div class="test-expected">Expected: Object has all 4 required properties</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">year 0 should have no spending applied</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Year 0 represents the retirement start point — pot is at its full value, no spending yet. <code>funded === 0</code>, <code>potAfter === startingPot</code>. This anchors the chart's retirement transition point.</div>
+                        <div class="test-expected">Expected: <code>results[0].funded === 0</code>, <code>results[0].potAfter === 500000</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should track depletion age</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> When a £100k pot at 2% growth tries to fund £50k/year over 40 years, it runs out well before age 100. The <code>depletionAge</code> must be a valid age under 100.</div>
+                        <div class="test-expected">Expected: <code>moneyLasts === false</code>, <code>depletionAge < 100</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should last when pot is large enough</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> A £2M pot spending £20k/year at 5% growth over 35 years should last easily. The 5% growth alone (£100k/year) far exceeds spending. <code>depletionAge</code> should be null.</div>
+                        <div class="test-expected">Expected: <code>moneyLasts === true</code>, <code>depletionAge === null</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">shortfall + funded should equal annual spending</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> The accounting identity <code>funded + shortfall = annualSpending</code> must hold for every year (excluding year 0). Any violation means the drawdown loop has a bug.</div>
+                        <div class="test-expected">Expected: <code>funded + shortfall ≈ 50000</code> for each year (after year 0)</div>
+                    </div>
+                </div>
+
+                <div class="group-header">computeStackingBands (Engine)</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">bands should sum to absolute values</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> For input arrays weak=[100,200,300], avg=[150,250,350], strong=[200,300,400]: <code>bandWeak + bandAvgExtra + bandStrongExtra</code> must equal the strong value at each index. This is how Chart.js stacked bars work.</div>
+                        <div class="test-expected">Expected: Sum of all 3 bands === strong[i] for each index</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should handle null values</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Pre-retirement data points are null. The function must propagate nulls correctly — not produce NaN or 0 for indices where the input is null.</div>
+                        <div class="test-expected">Expected: <code>null</code> input → <code>null</code> output for all 3 bands</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">bands should never be negative</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Even when scenarios cross over (e.g. weak=100, avg=80), the "extra" band uses <code>Math.max(0, ...)</code> to prevent negative values from breaking Chart.js rendering.</div>
+                        <div class="test-expected">Expected: All band values ≥ 0 (or null)</div>
+                    </div>
+                </div>
+
+                <div class="group-header">simulateAllScenarios</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should return weak, average, strong results</div>
+                        <div class="test-why">📐 <strong>Why:</strong> The all-scenarios runner must return an object with <code>weak</code>, <code>average</code>, <code>strong</code> keys — each containing a drawdown result. Both chart builders depend on this structure.</div>
+                        <div class="test-expected">Expected: Object has <code>weak</code>, <code>average</code>, <code>strong</code> properties</div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">strong should last longer than weak</div>
+                        <div class="test-why">🔗 <strong>Why:</strong> With higher growth and a larger pot, the strong scenario must sustain spending for more years. Tests relative ordering: strong years with positive pot ≥ weak years with positive pot.</div>
+                        <div class="test-expected">Expected: Strong positive-balance years ≥ weak positive-balance years</div>
+                    </div>
+                </div>
+
+                <div class="group-header">APP_CONFIG</div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should be frozen (immutable)</div>
+                        <div class="test-why">🛡️ <strong>Why:</strong> Configuration must be immutable — accidental mutation of <code>APP_CONFIG.TARGET_AGE = 50</code> would break the entire app. <code>Object.freeze()</code> is verified.</div>
+                        <div class="test-expected">Expected: <code>Object.isFrozen(APP_CONFIG) === true</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should have correct scenario rates</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> Scenario rates are hard-coded UK defaults: weak=2%, average=5%, strong=8%. If these change, all projections and charts would show wrong data.</div>
+                        <div class="test-expected">Expected: <code>WEAK.rate === 0.02</code>, <code>AVERAGE.rate === 0.05</code>, <code>STRONG.rate === 0.08</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">should have correct UK pension rules</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> UK regulatory values: minimum pension age 55, tax-free lump sum 25%, max lump sum £268,275. These are legal requirements and must be exact.</div>
+                        <div class="test-expected">Expected: <code>UK_MIN_PENSION_AGE === 55</code>, <code>TAX_FREE_LUMP_SUM_RATE === 0.25</code>, <code>MAX_TAX_FREE_LUMP === 268275</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">SCENARIO_LIST should have 3 entries</div>
+                        <div class="test-why">📐 <strong>Why:</strong> The scenario iteration loop depends on exactly 3 entries. If someone accidentally adds or removes a scenario, charts would break.</div>
+                        <div class="test-expected">Expected: <code>SCENARIO_LIST.length === 3</code></div>
+                    </div>
+                </div>
+
+                <div class="test-row">
+                    <div class="test-icon">✅</div>
+                    <div class="test-detail">
+                        <div class="test-name">TARGET_AGE should be 100</div>
+                        <div class="test-why">🔢 <strong>Why:</strong> All drawdown simulations run from retirement to age 100. Changing this would alter every chart and shortfall calculation in the app.</div>
+                        <div class="test-expected">Expected: <code>TARGET_AGE === 100</code></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>NestMapOS</strong> — Test Suite Documentation</p>
+            <p>Tests run via <code style="background:#e8ecf1;padding:2px 6px;border-radius:3px;">npm test</code> using Jest with jsdom environment</p>
+            <p class="small">© 2026 NestMapOS. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleSuite(header) {
+            const section = header.closest('.suite-section');
+            section.classList.toggle('collapsed');
+        }
+
+        function toggleAll(collapse) {
+            document.querySelectorAll('.suite-section').forEach(section => {
+                if (collapse) {
+                    section.classList.add('collapsed');
+                } else {
+                    section.classList.remove('collapsed');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

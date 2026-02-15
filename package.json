@@ -1,6 +1,6 @@
 {
   "name": "retirement-calculators",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A comprehensive web-based retirement planning tool that helps you project your pension growth and retirement income with scenario analysis and spending forecasts.",
   "scripts": {
     "start": "http-server ./src -p 8080",

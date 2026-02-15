@@ -15,9 +15,15 @@ function createSpendingChart(yearByYearData) {
         spendingChartInstance.destroy();
     }
 
-    const labels = yearByYearData.map(item => `Year ${item.year}`);
-    const potData = yearByYearData.map(item => item.potAtEnd);
-    const spendingData = yearByYearData.map(item => item.annualSpend);
+    // Create labels showing age (if available) or year
+    const labels = yearByYearData.map(item => {
+        if (item.age !== undefined) {
+            return `Age ${item.age}`;
+        }
+        return `Year ${item.year}`;
+    });
+    const potData = yearByYearData.map(item => item.potAtEnd || item.balance);
+    const spendingData = yearByYearData.map(item => item.annualSpend || item.spending);
 
     spendingChartInstance = new Chart(ctx, {
         type: 'line',
@@ -105,6 +111,12 @@ function createSpendingChart(yearByYearData) {
                     },
                     grid: {
                         drawOnChartArea: false
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Age During Retirement'
                     }
                 }
             }

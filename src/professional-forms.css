@@ -1,0 +1,569 @@
+/* Professional Date & Age Section */
+.date-section {
+    background: linear-gradient(135deg, #f5f8fb 0%, #f0f5fa 100%);
+    padding: 30px;
+    border-radius: 10px;
+    border: 1px solid #d5dce0;
+    margin-bottom: 30px;
+}
+
+.financial-section {
+    background: linear-gradient(135deg, #f5f8fb 0%, #f0f5fa 100%);
+    padding: 30px;
+    border-radius: 10px;
+    border: 1px solid #d5dce0;
+    margin-bottom: 30px;
+}
+
+.section-header {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(42, 82, 152, 0.15);
+}
+
+.section-header h3 {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #1e3c72;
+    margin-bottom: 8px;
+}
+
+.section-description {
+    font-size: 0.9em;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+.date-input-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.date-input-box {
+    background: white;
+    padding: 18px;
+    border-radius: 8px;
+    border: 1px solid #e8ecf1;
+}
+
+.date-input-box label {
+    margin-bottom: 12px;
+}
+
+.date-input-box input,
+.date-input-box select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #d5dce0;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.date-input-box input:focus,
+.date-input-box select:focus {
+    border-color: #2a5298;
+    box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+}
+
+.date-input-box .input-hint {
+    margin-top: 10px;
+}
+
+.btn-calculate {
+    width: 100%;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(42, 82, 152, 0.2);
+    margin-bottom: 12px;
+}
+
+.btn-calculate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(42, 82, 152, 0.3);
+}
+
+.btn-calculate:active {
+    transform: translateY(0);
+}
+
+.calculate-hint {
+    font-size: 0.85em;
+    color: #7f8c8d;
+    text-align: center;
+    margin: 0;
+}
+
+.form-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d5dce0, transparent);
+    margin: 30px 0;
+}
+
+/* Currency and Percentage Input Styling */
+.input-prefix,
+.input-suffix {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.currency-symbol,
+.suffix-symbol {
+    position: absolute;
+    font-weight: 600;
+    color: #2a5298;
+    font-size: 0.95em;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.currency-symbol {
+    left: 8px;
+}
+
+.input-prefix input {
+    padding-left: 32px;
+}
+
+.suffix-symbol {
+    right: 12px;
+}
+
+.input-suffix input {
+    padding-right: 28px;
+}
+
+/* Inline Spending Input (Voyant-style) */
+.spending-inline-section {
+    margin-bottom: 8px;
+}
+
+.spending-inline {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 16px 24px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.spending-inline-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #334155;
+    font-size: 0.95em;
+    white-space: nowrap;
+}
+
+.spending-icon {
+    font-size: 1.3em;
+}
+
+.spending-inline-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 280px;
+}
+
+.spending-inline-input input {
+    flex: 1;
+    max-width: 220px;
+    padding: 12px 15px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.btn-update-chart {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 9px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.btn-update-chart:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+}
+
+.spending-hint {
+    width: 100%;
+    color: #64748b;
+    font-size: 0.82em;
+    margin: 0;
+    padding-left: 32px;
+}
+
+@media (max-width: 600px) {
+    .spending-inline {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .spending-inline-input {
+        width: 100%;
+    }
+    .spending-hint {
+        padding-left: 0;
+    }
+}
+
+/* Legacy Longevity Section styles */
+.longevity-section {
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3e0 100%);
+    padding: 30px;
+    border-radius: 10px;
+    border: 2px solid #ffb74d;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.spending-step-header {
+    position: relative;
+    padding-left: 0;
+}
+
+.spending-step-header h3 {
+    color: #e65100;
+    margin-bottom: 8px;
+    font-size: 1.4em;
+}
+
+.spending-step-header h3::before {
+    content: '📊 ';
+}
+
+.longevity-section .section-description {
+    color: #5d4037;
+    margin-bottom: 20px;
+}
+
+.longevity-section h3 {
+    color: #1e3c72;
+    margin-bottom: 8px;
+    font-size: 1.4em;
+}
+
+.longevity-setup {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid #e8ecf1;
+    margin-bottom: 30px;
+}
+
+.longevity-setup .form-group {
+    margin-bottom: 0;
+}
+
+.btn-burndown {
+    background: linear-gradient(135deg, #e65100 0%, #ff6d00 100%) !important;
+    font-size: 1.1em !important;
+    padding: 14px 28px !important;
+    letter-spacing: 0.5px;
+    border: none !important;
+}
+
+.btn-burndown:hover {
+    background: linear-gradient(135deg, #bf360c 0%, #e65100 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(230, 81, 0, 0.3);
+}
+
+#calculateLongevityBtn {
+    margin-top: 15px;
+}
+
+/* Milestone Timeline */
+.milestone-container {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    border: 1px solid #e8ecf1;
+    margin-bottom: 30px;
+}
+
+.milestone-container h4 {
+    color: #1e3c72;
+    margin-bottom: 25px;
+    font-size: 1.1em;
+}
+
+.milestone-visual {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 20px 0;
+}
+
+.milestone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+    min-width: 120px;
+}
+
+.milestone-marker {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border: 4px solid white;
+    box-shadow: 0 2px 8px rgba(42, 82, 152, 0.3);
+    margin-bottom: 15px;
+}
+
+.milestone-start .milestone-marker {
+    background: linear-gradient(135deg, #2e7d32 0%, #388e3c 100%);
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
+}
+
+.milestone-end .milestone-marker {
+    background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
+    box-shadow: 0 2px 8px rgba(198, 40, 40, 0.3);
+}
+
+.milestone-label {
+    text-align: center;
+}
+
+.milestone-age {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: #1e3c72;
+    margin: 0 0 5px 0;
+}
+
+.milestone-title {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 5px 0;
+}
+
+.milestone-detail {
+    font-size: 0.85em;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+.milestone-line {
+    flex: 1;
+    height: 3px;
+    background: linear-gradient(90deg, #2a5298 0%, #d32f2f 100%);
+    margin: 0 15px;
+    position: relative;
+    top: -30px;
+}
+
+/* Longevity Summary */
+.longevity-summary {
+    margin-bottom: 30px;
+}
+
+.summary-grid-longevity {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 15px;
+}
+
+.summary-item-longevity {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e8ecf1;
+    text-align: center;
+    border-left: 4px solid #d5dce0;
+}
+
+.summary-item-longevity.status-success {
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+    border-left-color: #2e7d32;
+}
+
+.summary-item-longevity.status-warning {
+    background: linear-gradient(135deg, #fff8e1 0%, #fffde7 100%);
+    border-left-color: #f57f17;
+}
+
+.summary-item-longevity.status-danger {
+    background: linear-gradient(135deg, #ffebee 0%, #ffe0e0 100%);
+    border-left-color: #c62828;
+}
+
+.summary-label {
+    font-size: 0.75em;
+    color: #7f8c8d;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.summary-value {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #2a5298;
+}
+
+.status-success .summary-value {
+    color: #2e7d32;
+}
+
+.status-warning .summary-value {
+    color: #f57f17;
+}
+
+.status-danger .summary-value {
+    color: #c62828;
+}
+
+/* Longevity Chart */
+#longevityChartContainer {
+    margin: 30px 0;
+    padding: 28px;
+    background: white;
+    border-radius: 10px;
+    position: relative;
+    height: 420px;
+    border: 1px solid #e8ecf1;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+#longevityChart {
+    max-height: 380px;
+}
+
+.chart-hint {
+    font-size: 0.85em;
+    color: #7f8c8d;
+    margin-bottom: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .date-input-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .btn-calculate {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    .section-header h3 {
+        font-size: 1.1em;
+    }
+    
+    .milestone-visual {
+        flex-direction: column;
+    }
+    
+    .milestone-line {
+        width: 3px;
+        height: 30px;
+        margin: 15px 0;
+        top: 0;
+    }
+    
+    .summary-grid-longevity {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Lifecycle Chart Narrative */
+.chart-narrative {
+    margin-top: 20px;
+}
+
+.narrative-explanation {
+    margin-bottom: 16px;
+    padding: 14px 18px;
+    background: #f8f9fa;
+    border-left: 4px solid #667eea;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #333;
+}
+
+.narrative-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.narrative-card {
+    padding: 16px;
+    border-radius: 10px;
+    border: 2px solid;
+    text-align: center;
+}
+
+.narrative-card h4 {
+    margin: 8px 0;
+    font-size: 1em;
+}
+
+.narrative-card p {
+    margin: 6px 0;
+    font-size: 0.9em;
+    color: #334155;
+}
+
+.narrative-icon {
+    font-size: 1.5em;
+}
+
+.narrative-weak {
+    background: rgba(220, 53, 69, 0.06);
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+.narrative-average {
+    background: rgba(102, 126, 234, 0.06);
+    border-color: rgba(102, 126, 234, 0.3);
+}
+
+.narrative-strong {
+    background: rgba(40, 167, 69, 0.06);
+    border-color: rgba(40, 167, 69, 0.3);
+}
+
+.narrative-warning {
+    color: #dc3545 !important;
+    font-weight: 600;
+}
+
+.narrative-ok {
+    color: #28a745 !important;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .narrative-grid {
+        grid-template-columns: 1fr;
+    }
+}
