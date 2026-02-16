@@ -468,6 +468,260 @@
     margin-bottom: 15px;
 }
 
+/* ── Cash-Flow Chart Controls ─────────────────────────────────── */
+.cashflow-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+}
+
+.cashflow-controls .chart-age-toggle {
+    margin: 0;
+    flex: 1 1 auto;
+}
+
+.cashflow-scenario-toggle {
+    display: inline-flex;
+    gap: 0;
+    border: 2px solid #c0c9db;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #edf0f7;
+}
+
+.cashflow-scenario-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 22px;
+    border: none;
+    background: transparent;
+    font-size: 0.95em;
+    font-weight: 700;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+}
+
+.cashflow-scenario-btn:not(:last-child) {
+    border-right: 2px solid #c0c9db;
+}
+
+.cashflow-scenario-btn:hover {
+    background: #dde3f0;
+    color: #222;
+}
+
+.cashflow-scenario-btn.active {
+    background: white;
+    color: #1e3c72;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.13);
+}
+
+.scenario-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
+}
+
+.scenario-toggle-hint {
+    display: block;
+    font-size: 0.76em;
+    color: #888;
+    margin-top: 3px;
+    text-align: center;
+    font-style: italic;
+    letter-spacing: 0.2px;
+}
+
+@media (max-width: 480px) {
+    .cashflow-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .cashflow-scenario-toggle {
+        justify-content: center;
+    }
+}
+
+/* ── Wizard Progress Bar ──────────────────────────────────────── */
+.wizard-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 0 0 30px;
+    padding: 20px 10px;
+}
+
+.wizard-step-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.wizard-step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #e8ecf4;
+    color: #999;
+    font-weight: 700;
+    font-size: 1em;
+    border: 3px solid #dde3ee;
+    transition: all 0.3s ease;
+}
+
+.wizard-step-label {
+    font-size: 0.75em;
+    font-weight: 600;
+    color: #999;
+    white-space: nowrap;
+    transition: color 0.3s ease;
+}
+
+.wizard-step-indicator.active .wizard-step-number {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.35);
+    transform: scale(1.1);
+}
+
+.wizard-step-indicator.active .wizard-step-label {
+    color: #667eea;
+    font-weight: 700;
+}
+
+.wizard-step-indicator.completed .wizard-step-number {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.wizard-step-indicator.completed .wizard-step-number::after {
+    content: '\2713';
+    position: absolute;
+    font-size: 1em;
+}
+
+.wizard-step-indicator.completed .wizard-step-number {
+    font-size: 0;
+}
+
+.wizard-step-indicator.completed .wizard-step-label {
+    color: #28a745;
+}
+
+.wizard-step-indicator.completed:hover .wizard-step-number {
+    transform: scale(1.08);
+    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+}
+
+.wizard-step-connector {
+    flex: 1;
+    height: 3px;
+    background: #dde3ee;
+    margin: 0 -2px;
+    margin-bottom: 22px;
+    transition: background 0.3s ease;
+    max-width: 80px;
+    min-width: 20px;
+}
+
+.wizard-step-connector.completed {
+    background: #28a745;
+}
+
+/* Wizard Step Panels */
+.wizard-step {
+    animation: wizardFadeIn 0.35s ease;
+}
+
+@keyframes wizardFadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Wizard Navigation */
+.wizard-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+    padding-top: 24px;
+    border-top: 1px solid #e8ecf1;
+}
+
+.wizard-nav-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.wizard-btn {
+    min-width: 140px;
+    height: 48px;
+    padding: 0 28px !important;
+    font-size: 1em !important;
+    font-weight: 600;
+    border-radius: 8px;
+    box-sizing: border-box;
+    margin-top: 0 !important;
+}
+
+.wizard-step-counter {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: #667eea;
+    letter-spacing: 0.02em;
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .wizard-progress {
+        gap: 0;
+        padding: 14px 4px;
+    }
+    .wizard-step-number {
+        width: 30px;
+        height: 30px;
+        font-size: 0.85em;
+    }
+    .wizard-step-label {
+        font-size: 0.65em;
+    }
+    .wizard-step-connector {
+        min-width: 10px;
+        max-width: 40px;
+    }
+    .wizard-nav-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .wizard-btn {
+        min-width: 110px;
+        font-size: 0.9em !important;
+    }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .date-input-grid {
@@ -805,4 +1059,197 @@
     .narrative-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* ── Sporting Events Toggle & Summary ─────────────────────────── */
+.sporting-events-bar {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin: 8px 0 12px;
+    flex-wrap: wrap;
+}
+
+.sporting-events-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    font-size: 0.9em;
+    font-weight: 700;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    background: #f8f9fa;
+    color: #444;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.sporting-events-btn:hover {
+    border-color: #667eea;
+    color: #667eea;
+    background: #f0f2ff;
+}
+
+.sporting-events-btn.active {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.35);
+}
+
+.sporting-events-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 4px;
+    width: 100%;
+}
+
+.event-type-chip {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 16px;
+    font-size: 0.88em;
+    font-weight: 600;
+    border: 2px solid var(--chip-color, #aaa);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--chip-color, #555);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.event-type-chip:hover {
+    background: color-mix(in srgb, var(--chip-color) 10%, white);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+}
+
+.event-type-chip.active {
+    background: var(--chip-color, #667eea);
+    color: #fff;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--chip-color) 40%, transparent);
+}
+
+.event-type-chip .chip-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 5px;
+    border-radius: 11px;
+    font-size: 0.85em;
+    font-weight: 700;
+    background: color-mix(in srgb, var(--chip-color) 15%, white);
+    color: var(--chip-color, #555);
+}
+
+.event-type-chip.active .chip-count {
+    background: rgba(255,255,255,0.3);
+    color: #fff;
+}
+
+.chip-detail {
+    display: block;
+    font-size: 0.78em;
+    font-weight: 400;
+    opacity: 0.8;
+    white-space: nowrap;
+}
+
+.event-type-chip.active .chip-detail {
+    opacity: 0.9;
+}
+
+.sporting-summary-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sporting-summary-item strong {
+    font-size: 1.2em;
+    color: #667eea;
+}
+
+/* ── Save / Load Bar ──────────────────────────────────────────── */
+.save-load-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #f8f9fe 0%, #eef1ff 100%);
+    border: 1px solid #d0d7f7;
+    border-radius: 10px;
+    flex-wrap: wrap;
+}
+
+.save-load-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 18px;
+    font-size: 0.9em;
+    font-weight: 600;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    background: #fff;
+    color: #667eea;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.save-load-btn:hover {
+    background: #667eea;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.save-load-msg {
+    font-size: 0.85em;
+    color: #555;
+    flex: 1;
+    min-width: 150px;
+}
+
+/* Balance Sheet Explorer styles */
+#balanceSheetSection {
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+    background: #f8fafc;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(102,126,234,0.07);
+    padding: 2rem 2rem 1.5rem 2rem;
+}
+.balance-sheet-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem 1.5rem;
+    font-size: 1.08em;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(102,126,234,0.06);
+    padding: 1.2rem 1rem;
+    margin-bottom: 0.5rem;
+}
+#balanceYearSlider {
+    width: 220px;
+}
+#balancePrevYear, #balanceNextYear {
+    min-width: 36px;
+    height: 36px;
+    padding: 0;
+    font-size: 1.2em;
+    border-radius: 6px;
+}
+#balanceYearValue {
+    font-size: 1.1em;
+    color: #667eea;
 }

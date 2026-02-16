@@ -1,7 +1,7 @@
 /**
  * Browser Test Runner — Lightweight Jest-compatible test framework
  * Provides describe(), it(), test(), expect() with common matchers
- * for running the NestMapOS test suite directly in the browser.
+ * for running the Detractio test suite directly in the browser.
  * @version 0.4.1
  */
 

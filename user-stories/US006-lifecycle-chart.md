@@ -1,120 +1,78 @@
-# US#6: Lifecycle Chart & Longevity Planning
+# US#6: Lifecycle Chart & D-Stages Milestones
 
-**As a** UK pension saver  
-**I want to** see my complete financial journey from now through retirement on a single unified chart  
-**So that** I can understand the entire arc of my pension - from accumulation to drawdown - in one visual
+**As a** UK pension saver
+**I want to** see my complete financial journey from now through retirement on a single chart with key milestones marked
+**So that** I can understand the entire arc of my pension — from accumulation to drawdown — in one visual
 
-## Acceptance Criteria
+## Status: ✅ Implemented (v0.6.0)
 
-### Unified Lifecycle Chart
-- [x] Single line chart showing complete age timeline (current age to 100)
-- [x] X-axis: Age progression (e.g., Age 35, 36, 37... to Age 100)
-- [x] Y-axis: Pension pot value in GBP
-- [x] Chart shows **two distinct phases**:
-  - **Accumulation Phase**: From today to retirement (pot growing)
-  - **Drawdown Phase**: From retirement to age 100 (pot declining)
+---
 
-### Accumulation Phase Visualization
-- [x] Display 3 growth scenarios (Weak 2%, Average 5%, Strong 8%)
-- [x] Each scenario shown as separate line
-- [x] Weak scenario: Red dashed line
-- [x] Average scenario: Blue solid line (primary focus)
-- [x] Strong scenario: Green dashed line
-- [x] Pot grows continuously until retirement date
-- [x] Legend clearly identifies scenarios
+### Acceptance Criteria
 
-### Drawdown Phase Visualization
-- [x] Display single retirement drawdown line (Average 5% growth)
-- [x] Retirement drawdown: Red/coral line showing pot depletion
-- [x] Starts at retirement date
-- [x] Shows pot declining over time with annual spending
-- [x] Continues to age 100 or until money depletes
-- [x] Clear visual distinction from accumulation phase
+#### Unified Lifecycle Chart
+- [x] Single bar chart showing complete age timeline (current age → target age)
+- [x] X-axis: Age progression
+- [x] Y-axis: Pension pot value (£), formatted in thousands (£0k, £100k, £500k)
+- [x] Two distinct phases:
+  - **Accumulation Phase** (lighter shade): pot growing from today to retirement
+  - **Drawdown Phase** (darker shade): pot declining from retirement to target age
+- [x] Single-scenario viewing — one scenario shown at a time
+- [x] Weak / Average / Strong toggle buttons to switch scenario
+- [x] Shortfall bars (dashed red overlay) when pot depleted
 
-### Interactive Features
-- [x] Hover tooltips show exact values
-- [x] Tooltips display age, pot value, and scenario name
-- [x] Currency formatted with commas (£)
-- [x] Responsive chart (scales to screen size)
-- [x] Legend toggleable (click legend to show/hide scenarios)
+#### Scenario Toggle
+- [x] 3 toggle buttons: Weak (red), Average (blue/purple), Strong (green)
+- [x] Default: Average selected
+- [x] Cached data — all 3 scenarios computed once, re-rendered on toggle
+- [x] `_lcChartCache` stores all computed data, `_renderLifecycleScenario()` renders one at a time
+- [x] Toggle buttons scoped to lifecycle chart container only
 
-### Chart Axis & Labels
-- [x] X-axis label: "Age Timeline (Accumulation → Retirement Drawdown)"
-- [x] Y-axis label: "Pot Value (£)"
-- [x] Y-axis formatted in thousands (e.g., "£0k", "£100k", "£500k")
-- [x] Major gridlines for easy reading
-- [x] Age labels spaced appropriately
+#### D-Stages Milestone Markers
+- [x] Vertical dashed lines at key life events on the chart
+- [x] Emoji-labelled pills above chart area:
+  - 🎯 Retirement (at retirement age)
+  - 🏛️ State Pension (at state pension age, if different from retirement)
+  - 🏢 DB Pension (at DB pension start age, if enabled and amount > 0)
+  - ⏳ Life Expectancy (at plan-to age)
+- [x] Pills have white semi-transparent background with coloured border
+- [x] Auto-staggered rows when pills would overlap
+- [x] Horizontally clamped to stay within chart area
+- [x] D-Stages legend strip below chart
+- [x] Configurable via `APP_CONFIG.DSTAGES`
 
-### Mobile Responsiveness
-- [x] Chart maintains height on mobile (420px container)
-- [x] Legend responsive (stacks on small screens)
-- [x] Touch-friendly tooltips
-- [x] Full width utilization
-- [x] Readable on all screen sizes (320px+)
-
-### Milestone Timeline Display
-- [x] Visual timeline showing retirement and age 100 milestones
-- [x] Retirement milestone:
-  - Green circular marker
-  - Shows actual age and date
-  - Example: "Age 65 - 10 Jan 2036"
-- [x] Age 100 milestone:
-  - Red circular marker  
-  - Shows age 100 and date
-  - Example: "Age 100 - 10 Jan 2071"
-- [x] Connecting line between milestones (gradient green to red)
-- [x] Mobile layout: stacks vertically
-
-### Longevity Planning Integration
-- [x] User inputs annual retirement spending (£)
-- [x] "Analyze Longevity Plan" button triggers calculation
-- [x] System combines growth projection with spending plan
-- [x] Chart automatically updates to show unified lifecycle
-- [x] Shows visual transition from growth to drawdown
-
-### Summary Display
-- [x] Show 5 key metrics in card layout:
-  1. Retirement Pot (at retirement date)
-  2. Annual Spending (during retirement)
-  3. Years Planned (retirement age to 100)
-  4. Balance at 100 (remaining or depleted)
-  5. Status (Money Lasts ✅ or Money Depleted ⚠️)
-- [x] Status color-coded: Green for success, Red for depleted
+#### Interactive Features
+- [x] Hover tooltips show exact pot value for that age
+- [x] Tooltip displays phase indicator (📈 Accumulation / 🎯 Retirement Starts / 📉 Drawdown)
+- [x] Tooltip includes milestone callout when hovering on a milestone age
 - [x] Currency formatted with commas
-- [x] Cards stack on mobile
+- [x] Responsive chart (scales to screen size)
 
-### Future Extensibility
-- [x] Architecture supports adding multiple custom milestones
-- [x] Milestone system designed for future configuration
-- [x] Spending adjustments by milestone (future feature)
-- [x] Multiple goal milestones (future feature)
-- [x] Tax event milestones (future feature)
+#### Plan-to-Age Slider
+- [x] Range slider (65–110) below chart
+- [x] Reset button snaps to life expectancy value
+- [x] Changing slider updates `currentLifeExpectancy`, rebuilds chart
+- [x] Synced with cash flow chart slider
 
-## Files Created/Modified
-- `src/index.html` - Added longevity planning section with milestone timeline and summary
-- `src/app.js` - Added `createCombinedLifecycleChart()` and `calculateLongevityPlan()`
-- `src/charts/growth-chart.js` - Growth chart visualization component
-- `src/professional-forms.css` - Styling for milestones and longevity section
+#### Narrative Cards
+- [x] 3 scenario narrative cards below chart (Weak / Average / Strong)
+- [x] Per-scenario: pot at retirement, depletion age warning or remaining balance
+- [x] Explanatory paragraph about the 3 growth scenarios
 
-## Implementation Notes
+#### Fallback
+- [x] `createDrawdownOnlyChart()` line chart when growth data unavailable
 
-### Chart Data Structure
-- Accumulation phase: Years 0 to retirement (from growth projections)
-- Drawdown phase: Years 0 to (100 - retirementAge) (from longevity calculations)
-- Chart combines both phases with continuous age axis
+---
 
-### Calculation Logic
-- Growth phase: Uses investment return rate on accumulating pot
-- Drawdown phase: Uses investment return rate on declining pot (with annual withdrawal)
-- Money stops generating growth once depleted (balance clamped to ≥0)
+### Files
+- `src/charts/lifecycle-chart-builder.js` — Main chart builder, `dStagesPlugin`, cache & render, toggle wiring
+- `src/config.js` — `DSTAGES` config (line width, font, colours, 4 default milestones)
+- `src/calculator.html` — Chart container, toggle buttons, age slider, D-Stages legend div
+- `src/app.js` — Calls `createCombinedLifecycleChart()`, age slider event handlers
+- `src/style.css` — `.dstages-legend`, `.dstages-item`, `.dstages-dot` styling
 
-### Visual Hierarchy
-1. Main chart: Shows accumulation + drawdown on single axis
-2. Milestone timeline: Emphasizes key life events
-3. Summary cards: Highlights critical outcomes (balance at 100, status)
-
-## Related User Stories
-- US#3: Income Projection & Scenario Analysis
-- US#4: Results Display & Visualization
-- US#5: Retirement Spending Analysis
-- US#1: Calculator Input Form with dates and pension details
+### Related Stories
+- US#3: Scenario Analysis (scenario toggle pattern)
+- US#5: Retirement Spending (drawdown data source)
+- US#7: Cash Flow Chart (companion chart, synced slider)
+- US#8: Other Income (age-aware spending offsets in drawdown)

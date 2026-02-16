@@ -12,18 +12,20 @@
  *
  * @param {Object} params
  * @param {number} params.startingPot     - Pot value at retirement
- * @param {number} params.annualSpending  - Desired annual withdrawal
+ * @param {number} params.annualSpending  - Desired annual withdrawal (gross, before other income)
  * @param {number} params.growthRate      - Annual growth rate (decimal, e.g. 0.05)
  * @param {number} params.years           - Number of years to simulate
  * @param {number} [params.retirementAge] - Starting age (for labelling)
+ * @param {Function} [params.getSpendingAtAge] - Optional callback(age) → net withdrawal from pot
  * @returns {DrawdownResult}
  */
-function simulateDrawdown({ startingPot, annualSpending, growthRate, years, retirementAge = 0 }) {
+function simulateDrawdown({ startingPot, annualSpending, growthRate, years, retirementAge = 0, getSpendingAtAge }) {
     const results = [];
     let balance = startingPot;
 
     for (let year = 0; year <= years; year++) {
         const age = retirementAge + year;
+        const spending = getSpendingAtAge ? getSpendingAtAge(age) : annualSpending;
         const growth = balance > 0 ? balance * growthRate : 0;
         const available = balance + growth;
 
@@ -41,9 +43,9 @@ function simulateDrawdown({ startingPot, annualSpending, growthRate, years, reti
             continue;
         }
 
-        const funded = Math.min(annualSpending, Math.max(0, available));
-        const shortfall = Math.max(0, annualSpending - available);
-        balance = Math.max(0, available - annualSpending);
+        const funded = Math.min(spending, Math.max(0, available));
+        const shortfall = Math.max(0, spending - available);
+        balance = Math.max(0, available - spending);
 
         results.push({
             year,
@@ -72,16 +74,21 @@ function simulateDrawdown({ startingPot, annualSpending, growthRate, years, reti
  * @param {number} params.years
  * @param {number} params.retirementAge
  * @param {Object} params.retirementPots - { weak, average, strong }
+ * @param {Function} [params.getSpendingAtAge] - Optional callback(age) → net withdrawal
  * @returns {{ weak: DrawdownResult, average: DrawdownResult, strong: DrawdownResult }}
  */
-function simulateAllScenarios({ annualSpending, years, retirementAge, retirementPots }) {
-    const scenarios = (typeof APP_CONFIG !== 'undefined')
-        ? APP_CONFIG.SCENARIO_LIST
-        : [
-            { id: 'WEAK',    rate: 0.02 },
-            { id: 'AVERAGE', rate: 0.05 },
-            { id: 'STRONG',  rate: 0.08 }
-        ];
+function simulateAllScenarios({ annualSpending, years, retirementAge, retirementPots, getSpendingAtAge }) {
+    const scenarios = (typeof getActiveScenarioListNet === 'function')
+        ? getActiveScenarioListNet()
+        : (typeof getActiveScenarioList === 'function')
+            ? getActiveScenarioList()
+            : (typeof APP_CONFIG !== 'undefined')
+                ? APP_CONFIG.SCENARIO_LIST
+                : [
+                    { id: 'WEAK',    rate: 0.02 },
+                    { id: 'AVERAGE', rate: 0.05 },
+                    { id: 'STRONG',  rate: 0.08 }
+                ];
 
     const out = {};
     scenarios.forEach(s => {
@@ -91,7 +98,8 @@ function simulateAllScenarios({ annualSpending, years, retirementAge, retirement
             annualSpending,
             growthRate: s.rate,
             years,
-            retirementAge
+            retirementAge,
+            getSpendingAtAge
         });
     });
     return out;

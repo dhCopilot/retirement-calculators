@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detractio — Login / Register</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="professional-forms.css">
+    <style>
+        /* ── Login Page Styles ─────────────────────────────────── */
+        .auth-wrapper {
+            max-width: 480px;
+            margin: 0 auto 40px;
+        }
+
+        .auth-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(30, 60, 114, 0.10);
+            overflow: hidden;
+        }
+
+        .auth-tabs {
+            display: flex;
+            border-bottom: 2px solid #eee;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1em;
+            background: #f8f9fa;
+            color: #888;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .auth-tab:hover {
+            color: #667eea;
+            background: #f0f2ff;
+        }
+
+        .auth-tab.active {
+            background: #fff;
+            color: #1e3c72;
+            border-bottom: 3px solid #667eea;
+            margin-bottom: -2px;
+        }
+
+        .auth-form {
+            padding: 32px 28px;
+        }
+
+        .auth-form[style*="display: none"] {
+            display: none;
+        }
+
+        .auth-field {
+            margin-bottom: 20px;
+        }
+
+        .auth-field label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .auth-field input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #dde2e8;
+            border-radius: 8px;
+            font-size: 1em;
+            color: #333;
+            transition: border-color 0.2s ease;
+            background: #fafbfc;
+        }
+
+        .auth-field input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+        }
+
+        .auth-name-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .auth-submit {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05em;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+
+        .auth-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+        }
+
+        .auth-error {
+            display: none;
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            color: #c53030;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .auth-error.visible {
+            display: block;
+        }
+
+        .auth-success {
+            display: none;
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            background: #f0fff4;
+            border: 1px solid #c6f6d5;
+            color: #276749;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .auth-success.visible {
+            display: block;
+        }
+
+        .auth-hint {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 0.88em;
+            color: #888;
+        }
+
+        .auth-hint a {
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .auth-hint a:hover {
+            text-decoration: underline;
+        }
+
+        /* Premium badge */
+        .premium-features {
+            margin-top: 30px;
+            padding: 24px;
+            background: linear-gradient(135deg, #fefefe 0%, #f0f4ff 100%);
+            border: 1px solid #d0d7f7;
+            border-radius: 14px;
+        }
+
+        .premium-features h3 {
+            font-size: 1.15em;
+            color: #1e3c72;
+            margin-bottom: 14px;
+        }
+
+        .premium-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .premium-list li {
+            padding: 8px 0;
+            font-size: 0.92em;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .premium-list li:last-child {
+            border-bottom: none;
+        }
+
+        .premium-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            font-size: 0.72em;
+            font-weight: 700;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Logged-in profile view */
+        .profile-card {
+            padding: 32px 28px;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            font-size: 1.8em;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .profile-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 4px;
+        }
+
+        .profile-email {
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .profile-tier {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        .profile-tier.free {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .profile-tier.premium {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+
+        .profile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .profile-actions .btn-profile {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            border: 2px solid #dde2e8;
+            background: #fff;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .profile-actions .btn-profile:hover {
+            border-color: #667eea;
+            color: #667eea;
+            background: #f0f2ff;
+        }
+
+        .profile-actions .btn-profile.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .profile-actions .btn-profile.primary:hover {
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .profile-actions .btn-logout {
+            background: none;
+            border: 1px solid #ddd;
+            color: #999;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.88em;
+            transition: all 0.15s ease;
+        }
+
+        .profile-actions .btn-logout:hover {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .profile-saved-info {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            font-size: 0.88em;
+            color: #555;
+        }
+
+        .profile-saved-info strong {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔥 Detractio</h1>
+            <div class="slogan-container">
+                <span class="slogan-icon">💷</span>
+                <p class="subtitle">Because Timing Your Withdrawal Matters</p>
+                <span class="slogan-subtext">Serious financial modelling. Delivered with a wink.</span>
+            </div>
+            <p class="version">v0.4.1</p>
+            <a href="index.html" class="view-features-link">🏠 Home</a>
+            <a href="calculator.html" class="view-features-link" style="margin-left:8px;">📊 Calculator</a>
+        </header>
+
+        <div class="auth-wrapper">
+            <!-- Login / Register card (shown when logged out) -->
+            <div id="authCard" class="auth-card">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Sign In</button>
+                    <button class="auth-tab" data-tab="register">Create Account</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form" autocomplete="on">
+                    <div id="loginError" class="auth-error"></div>
+                    <div class="auth-field">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" placeholder="you@example.com" required autocomplete="email">
+                    </div>
+                    <div class="auth-field">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="auth-submit">Sign In</button>
+                    <p class="auth-hint">Don't have an account? <a data-switch="register">Create one free</a></p>
+                </form>
+
+                <!-- Register Form -->
+                <form id="registerForm" class="auth-form" style="display: none;" autocomplete="on">
+                    <div id="registerError" class="auth-error"></div>
+                    <div id="registerSuccess" class="auth-success"></div>
+                    <div class="auth-name-row">
+                        <div class="auth-field">
+                            <label for="regFirstName">First Name</label>
+                            <input type="text" id="regFirstName" placeholder="Jane" required autocomplete="given-name">
+                        </div>
+                        <div class="auth-field">
+                            <label for="regLastName">Last Name <span class="optional-label">(optional)</span></label>
+                            <input type="text" id="regLastName" placeholder="Smith" autocomplete="family-name">
+                        </div>
+                    </div>
+                    <div class="auth-field">
+                        <label for="regEmail">Email Address</label>
+                        <input type="email" id="regEmail" placeholder="you@example.com" required autocomplete="email">
+                    </div>
+                    <div class="auth-field">
+                        <label for="regPassword">Password</label>
+                        <input type="password" id="regPassword" placeholder="Min 6 characters" required minlength="6" autocomplete="new-password">
+                    </div>
+                    <button type="submit" class="auth-submit">Create Free Account</button>
+                    <p class="auth-hint">Already have an account? <a data-switch="login">Sign in</a></p>
+                </form>
+            </div>
+
+            <!-- Profile card (shown when logged in) -->
+            <div id="profileCard" class="auth-card" style="display: none;">
+                <div class="profile-card">
+                    <div class="profile-avatar" id="profileAvatar">J</div>
+                    <div class="profile-name" id="profileName">Jane Smith</div>
+                    <div class="profile-email" id="profileEmail">jane@example.com</div>
+                    <div class="profile-tier free" id="profileTier">Free</div>
+
+                    <div class="profile-saved-info" id="profileSavedInfo" style="display: none;">
+                        💾 You have saved calculator data.
+                        <br>Last saved: <strong id="profileLastSaved"></strong>
+                    </div>
+
+                    <div class="profile-actions">
+                        <a href="calculator.html" class="btn-profile primary">📊 Go to Calculator</a>
+                        <button class="btn-logout" id="logoutBtn">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium features promo -->
+            <div class="premium-features">
+                <h3>✨ Why Create an Account?</h3>
+                <ul class="premium-list">
+                    <li>💾 Save your calculator inputs and reload them anytime</li>
+                    <li>📊 Keep your projections between sessions</li>
+                    <li>🔄 Switch devices — your data follows you</li>
+                    <li>
+                        🚀 Access premium features
+                        <span class="premium-badge">Coming Soon</span>
+                    </li>
+                    <li>
+                        📈 Advanced tax modelling
+                        <span class="premium-badge">Premium</span>
+                    </li>
+                    <li>
+                        📋 PDF report export
+                        <span class="premium-badge">Premium</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="utils/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const authCard = document.getElementById('authCard');
+            const profileCard = document.getElementById('profileCard');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const loginError = document.getElementById('loginError');
+            const registerError = document.getElementById('registerError');
+            const registerSuccess = document.getElementById('registerSuccess');
+
+            // ── Show correct view ──────────────────────────────
+            function updateView() {
+                const user = Auth.getCurrentUser();
+                if (user) {
+                    authCard.style.display = 'none';
+                    profileCard.style.display = '';
+                    renderProfile(user);
+                } else {
+                    authCard.style.display = '';
+                    profileCard.style.display = 'none';
+                }
+            }
+
+            function renderProfile(user) {
+                const initials = (user.firstName[0] + (user.lastName ? user.lastName[0] : '')).toUpperCase();
+                document.getElementById('profileAvatar').textContent = initials;
+                document.getElementById('profileName').textContent = user.firstName + ' ' + (user.lastName || '');
+                document.getElementById('profileEmail').textContent = user.email;
+
+                const tierEl = document.getElementById('profileTier');
+                tierEl.textContent = user.tier === 'premium' ? 'Premium' : 'Free';
+                tierEl.className = 'profile-tier ' + (user.tier || 'free');
+
+                // Check for saved data (UserData module may not be loaded on this page)
+                const savedInfo = document.getElementById('profileSavedInfo');
+                try {
+                    const key = 'detractio_data_' + user.email;
+                    const raw = localStorage.getItem(key);
+                    if (raw) {
+                        const data = JSON.parse(raw);
+                        savedInfo.style.display = '';
+                        const when = data._savedAt ? new Date(data._savedAt).toLocaleString('en-GB') : 'Unknown';
+                        document.getElementById('profileLastSaved').textContent = when;
+                    } else {
+                        savedInfo.style.display = 'none';
+                    }
+                } catch (_) {
+                    savedInfo.style.display = 'none';
+                }
+            }
+
+            // ── Tab switching ──────────────────────────────────
+            document.querySelectorAll('.auth-tab').forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    const target = tab.dataset.tab;
+                    document.querySelectorAll('.auth-tab').forEach(function (t) { t.classList.remove('active'); });
+                    tab.classList.add('active');
+                    loginForm.style.display = target === 'login' ? '' : 'none';
+                    registerForm.style.display = target === 'register' ? '' : 'none';
+                    loginError.classList.remove('visible');
+                    registerError.classList.remove('visible');
+                    registerSuccess.classList.remove('visible');
+                });
+            });
+
+            // Hint links (e.g. "Don't have an account? Create one")
+            document.querySelectorAll('[data-switch]').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    const target = link.dataset.switch;
+                    document.querySelector('.auth-tab[data-tab="' + target + '"]').click();
+                });
+            });
+
+            // ── Login ──────────────────────────────────────────
+            loginForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                loginError.classList.remove('visible');
+
+                const result = Auth.login(
+                    document.getElementById('loginEmail').value,
+                    document.getElementById('loginPassword').value
+                );
+
+                if (result.success) {
+                    updateView();
+                } else {
+                    loginError.textContent = result.error;
+                    loginError.classList.add('visible');
+                }
+            });
+
+            // ── Register ──────────────────────────────────────
+            registerForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                registerError.classList.remove('visible');
+                registerSuccess.classList.remove('visible');
+
+                const result = Auth.register({
+                    email: document.getElementById('regEmail').value,
+                    password: document.getElementById('regPassword').value,
+                    firstName: document.getElementById('regFirstName').value,
+                    lastName: document.getElementById('regLastName').value
+                });
+
+                if (result.success) {
+                    updateView();
+                } else {
+                    registerError.textContent = result.error;
+                    registerError.classList.add('visible');
+                }
+            });
+
+            // ── Logout ────────────────────────────────────────
+            document.getElementById('logoutBtn').addEventListener('click', function () {
+                Auth.logout();
+                updateView();
+                loginForm.reset();
+                registerForm.reset();
+            });
+
+            // ── Init ──────────────────────────────────────────
+            updateView();
+        });
+    </script>
+</body>
+</html>

@@ -1,63 +1,75 @@
-# US#4: Results Display & Visualization
+# US#4: Results Display & Visualisation
 
-**As a** UK pension saver  
-**I want to** see my pension calculations in a clear, organized, visual format  
+**As a** UK pension saver
+**I want to** see my pension calculations in a clear, organised, visual format
 **So that** I can quickly understand my retirement outlook
 
-## Acceptance Criteria
+## Status: ✅ Implemented (v0.4.0)
 
-### Results Display
-- [ ] Display projected pension pot prominently
-- [ ] Show tax-free lump sum (25% of pot, max £268,275)
-- [ ] Show annual retirement income
-- [ ] Show monthly income equivalent
-- [ ] Show total contributions made
-- [ ] Show growth amount (separate from contributions)
+---
 
-### Inflation Information
-- [ ] Show current inflation setting (ON or OFF)
-- [ ] Show inflation rate being used (0-5%)
-- [ ] If inflation ON: Display real values (today's pounds)
-- [ ] If inflation ON: Display nominal values (future pounds)
-- [ ] Badge indicating "Inflation Included" or "Nominal Only"
+### Acceptance Criteria
 
-### Scenario Comparison Results
-- [ ] Display 3 scenario cards (Weak, Average, Strong)
-- [ ] Each card shows pot, income, and comparison
-- [ ] Highlight average as base case
-- [ ] Show differences in both £ and %
-- [ ] Side-by-side layout on desktop
-- [ ] Stack layout on mobile
+#### Scenario Range Strip
+- [x] Clickable 3-scenario bar (Weak / Average / Strong)
+- [x] Each segment shows projected pot and growth rate
+- [x] Colour-coded: red / green / gold
+- [x] Click switches all result cards to that scenario
 
-### Growth Chart Visualization
-- [x] Line chart showing pot growth over time
-- [x] Show "Your Contributions" line separately
-- [x] Show "Total Growth" visually
-- [x] Chart responsive to screen size
-- [x] Legend clearly labeled
-- [x] Currency formatted on Y-axis
-- [x] Interactive tooltips on hover
-- [x] **Integrated with longevity planning**: Chart extends to show retirement drawdown when longevity plan activated (see US#6)
+#### Result Cards
+- [x] 🎯 Projected Pot at Retirement (with real/nominal toggle when inflation enabled)
+- [x] 💵 Tax-Free Lump Sum (25% of pot, max £268,275)
+- [x] 📊 Annual Income (4% SWR) + monthly breakdown
+- [x] 💰 Total Contributions made
+- [x] 📈 Investment Growth (amount + percentage of final pot)
+- [x] ⏱️ Time Horizon (years until retirement)
+- [x] Net growth rate label (gross − fees = net, when fees enabled)
 
-### Mobile Responsiveness
-- [ ] All content readable on small screens
-- [ ] Cards stack vertically on mobile
-- [ ] Chart maintains visibility
-- [ ] Touch-friendly sizing
-- [ ] No horizontal scrolling needed
-- [ ] Font sizes readable (min 14px)
+#### Badges
+- [x] 📉 Inflation Adjustment badge (when inflation enabled, shows rate)
+- [x] 💰 Other Income badge — shows phased income summary (e.g. "£X/yr from age 60, rising to £Y/yr")
 
-## Files to Create/Modify
-- `src/index.html` (result cards structure)
-- `src/style.css` (styling and layout)
-- `src/charts/growth-chart.js` (Chart.js configuration)
-- `src/app.js` (populate results, event handling)
+#### Milestone Timeline
+- [x] Visual timeline: Retirement Age → Longevity Target
+- [x] Shows years between milestones
+- [x] Retirement date and target date details
 
-## Definition of Done
-- [ ] Results display functional and styled
-- [ ] Charts render correctly
-- [ ] Mobile responsive verified
-- [ ] Inflation badges display
-- [ ] All values formatted correctly
-- [ ] Tests passing (80%+ coverage)
-- [ ] Code reviewed
+#### Longevity Summary Panel
+- [x] Retirement Pot value
+- [x] Annual Spending amount
+- [x] Years Planned (retirement age to target)
+- [x] Balance at target age
+- [x] Status indicator: Money Lasts ✅ or Depleted ⚠️
+
+#### Narrative Cards
+- [x] 3 scenario narrative cards (Weak / Average / Strong) below lifecycle chart
+- [x] Per-scenario: pot at retirement, depletion age warning or remaining balance
+- [x] Explanatory paragraph about the 3 growth scenarios
+
+#### Retirement Spending Analysis Section
+- [x] Spending Mode selector:
+  - Mode A (Spending Plan): enter annual spend, see if money lasts
+  - Mode B (Maximum Sustainable Spending): discover max safe annual/monthly spend
+- [x] Analyze Spending Plan button
+- [x] Spending status card (✅ Success / ⚠️ Warning with depletion age)
+- [x] Summary grid: Starting Pot, Annual Spending, Retirement Duration, Total Spent, Final Balance, Money Runs Out age
+
+#### Mobile Responsiveness
+- [x] Cards stack vertically on mobile
+- [x] Charts maintain visibility
+- [x] Touch-friendly sizing
+- [x] Font sizes readable (min 14px)
+
+---
+
+### Files
+- `src/calculator.html` — Result cards, range strip, badges, milestone timeline, longevity summary, spending analysis section
+- `src/app.js` — `_resultsCache`, `switchResultsScenario()`, `populateResultCards()`, `calculateLongevityPlan()`
+- `src/style.css` — Card layout, range strip, badges, timeline styling
+- `src/professional-forms.css` — Form and button styling
+
+### Related Stories
+- US#3: Scenario Analysis (result card switching)
+- US#5: Retirement Spending (spending analysis section)
+- US#6: Lifecycle Chart (visual projection)
+- US#11: Edit-from-Results (re-edit workflow)

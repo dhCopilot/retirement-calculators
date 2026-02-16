@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NestMapOS - Professional Pension & Retirement Planning</title>
+    <title>Detractio — Retirement Calculator</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="professional-forms.css">
@@ -11,22 +11,60 @@
 <body>
     <div class="container">
         <header>
-            <h1>NestMapOS</h1>
+            <h1>🔥 Detractio</h1>
             <div class="slogan-container">
-                <span class="slogan-icon">📈</span>
-                <p class="subtitle">Financial Management ReImagined</p>
-                <span class="slogan-subtext">Professional Retirement Planning & Wealth Optimization</span>
+                <span class="slogan-icon">💷</span>
+                <p class="subtitle">Because Timing Your Withdrawal Matters</p>
+                <span class="slogan-subtext">Serious financial modelling. Delivered with a wink.</span>
             </div>
             <p class="version">v0.4.1</p>
             <a href="index.html" class="view-features-link">🏠 Home</a>
             <a href="functionality.html" class="view-features-link" style="margin-left:8px;">📋 Features</a>
             <a href="tests.html" class="view-features-link" style="margin-left:8px;">🧪 Test Suite</a>
+            <a href="login.html" class="view-features-link" style="margin-left:8px;" id="headerAuthLink">🔑 Login</a>
         </header>
 
         <!-- Calculator Form -->
         <section id="calculator-form" class="card">
             <h2>Retirement Planning Calculator</h2>
-            
+
+            <!-- Save / Load Bar (visible when logged in) -->
+            <div id="saveLoadBar" class="save-load-bar" style="display: none;">
+                <button id="saveDataBtn" class="save-load-btn" title="Save your inputs">💾 Save</button>
+                <button id="loadDataBtn" class="save-load-btn" title="Load your saved inputs">📂 Load</button>
+                <span id="saveLoadMsg" class="save-load-msg" style="display: none;"></span>
+            </div>
+
+            <!-- Wizard Progress Bar -->
+            <div class="wizard-progress" id="wizardProgress">
+                <div class="wizard-step-indicator active" data-step="1">
+                    <span class="wizard-step-number">1</span>
+                    <span class="wizard-step-label">Timeline</span>
+                </div>
+                <div class="wizard-step-connector"></div>
+                <div class="wizard-step-indicator" data-step="2">
+                    <span class="wizard-step-number">2</span>
+                    <span class="wizard-step-label">Pension</span>
+                </div>
+                <div class="wizard-step-connector"></div>
+                <div class="wizard-step-indicator" data-step="3">
+                    <span class="wizard-step-number">3</span>
+                    <span class="wizard-step-label">Spending</span>
+                </div>
+                <div class="wizard-step-connector"></div>
+                <div class="wizard-step-indicator" data-step="4">
+                    <span class="wizard-step-number">4</span>
+                    <span class="wizard-step-label">Assumptions</span>
+                </div>
+                <div class="wizard-step-connector"></div>
+                <div class="wizard-step-indicator" data-step="5">
+                    <span class="wizard-step-number">5</span>
+                    <span class="wizard-step-label">Income</span>
+                </div>
+            </div>
+
+            <!-- Step 1 of 5 -->
+            <div class="wizard-step" data-step="1">
             <!-- Date Information Section -->
             <div class="date-section">
                 <div class="section-header">
@@ -114,10 +152,10 @@
                     <p class="input-hint">Auto-calculated from your DOB &amp; retirement age, or override manually</p>
                 </div>
             </div>
+            </div><!-- /wizard-step 1 -->
 
-            <div class="form-divider"></div>
-
-            <!-- Financial Information Section -->
+            <!-- Step 2 of 5 -->
+            <div class="wizard-step" data-step="2" style="display:none">
             <div class="financial-section">
                 <div class="section-header">
                     <h3>Step 2: Your Pension Details</h3>
@@ -136,79 +174,298 @@
                     <p class="input-hint">Amount you contribute each month</p>
                 </div>
             </div>
+            </div><!-- /wizard-step 2 -->
 
-            <!-- Retirement Spending Input - Step 3 -->
-            <section id="longevityPlanning" class="financial-section" style="display: none;">
+            <!-- Step 3 of 5 -->
+            <div class="wizard-step" data-step="3" style="display:none">
+            <section id="longevityPlanning" class="financial-section">
                 <div class="section-header">
                     <h3>Step 3: Retirement Spending</h3>
-                    <p class="section-description">How much do you plan to spend annually in retirement?</p>
+                    <p class="section-description">How much do you plan to withdraw each year? Go on… take a little out.</p>
                 </div>
                 <div class="form-group">
                     <label for="retirementAnnualSpending">Annual Retirement Spending (£)</label>
                     <input type="text" inputmode="numeric" id="retirementAnnualSpending" placeholder="e.g. 40,000">
-                    <p class="spending-hint" id="spendingSuggestion">Suggested based on 4% safe withdrawal rate</p>
+                    <p class="spending-hint" id="spendingSuggestion">We'll suggest a figure based on the 4% safe withdrawal rate after you calculate</p>
                 </div>
-                <button type="button" id="calculateLongevityBtn" class="btn-primary">Update Charts</button>
             </section>
+            </div><!-- /wizard-step 3 -->
 
-            <div class="form-group">
-                <label for="investmentGrowth">Annual Investment Growth Rate</label>
-                <div class="input-suffix">
-                    <input type="number" id="investmentGrowth" min="0" max="15" step="0.1" value="5" placeholder="5">
-                    <span class="suffix-symbol">%</span>
+            <!-- Step 4 of 5 -->
+            <div class="wizard-step" data-step="4" style="display:none">
+            <div class="financial-section">
+                <div class="section-header">
+                    <h3>Step 4: Your Assumptions</h3>
+                    <p class="section-description">Tweak the numbers that drive the engine — or trust the defaults, they're pretty solid.</p>
                 </div>
-                <p class="input-hint">Default 5% based on UK historical averages. Range: 0% - 15%</p>
-            </div>
 
-            <div class="form-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="includeInflation" checked>
-                    <span>Include Inflation Adjustment</span>
-                </label>
-                <p class="input-hint">Show results in today's pounds (real values) vs future pounds (nominal values)</p>
-            </div>
-
-            <div class="form-group" id="inflationRateGroup">
-                <label for="inflationRate">Inflation Rate</label>
-                <div class="input-suffix">
-                    <input type="number" id="inflationRate" min="0" max="5" step="0.1" value="2.5" placeholder="2.5">
-                    <span class="suffix-symbol">%</span>
+                <!-- Inflation -->
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="includeInflation" checked>
+                        <span>Include Inflation Adjustment</span>
+                    </label>
+                    <p class="input-hint">Show results in today's pounds (real values) vs future pounds (nominal values)</p>
                 </div>
-                <p class="input-hint">Default 2.5% based on UK average. Range: 0% - 5%</p>
-            </div>
 
-            <div class="form-group">
-                <label>📊 Scenario Analysis - Compare Growth Rates:</label>
-                <p class="form-hint">See how different growth scenarios affect your retirement</p>
-                <div class="scenario-buttons">
-                    <button type="button" class="scenario-btn" id="scenarioWeakBtn" data-scenario="weak" data-rate="2">
-                        <span class="scenario-label">Weak</span>
-                        <span class="scenario-rate">2%</span>
-                    </button>
-                    <button type="button" class="scenario-btn active" id="scenarioAverageBtn" data-scenario="average" data-rate="5">
-                        <span class="scenario-label">Average</span>
-                        <span class="scenario-rate">5%</span>
-                    </button>
-                    <button type="button" class="scenario-btn" id="scenarioStrongBtn" data-scenario="strong" data-rate="8">
-                        <span class="scenario-label">Strong</span>
-                        <span class="scenario-rate">8%</span>
-                    </button>
+                <div class="form-group" id="inflationRateGroup">
+                    <label for="inflationRate">Inflation Rate</label>
+                    <div class="input-suffix">
+                        <input type="number" id="inflationRate" min="0" max="5" step="0.1" value="2.5" placeholder="2.5">
+                        <span class="suffix-symbol">%</span>
+                    </div>
+                    <p class="input-hint">Default 2.5% based on UK average. Range: 0%–5%</p>
                 </div>
-                <p class="form-hint">Selected scenario overrides the investment growth rate above</p>
-            </div>
 
-            <button id="calculateBtn" class="btn-primary">Calculate My Pension</button>
+                <!-- Scenario Growth Rates -->
+                <div class="form-group">
+                    <label>📊 Growth Scenarios — your three futures</label>
+                    <p class="form-hint">We compare Weak, Average and Strong growth side by side. Override the rates if you fancy, but keep them in order.</p>
+
+                    <div class="scenario-buttons">
+                        <div class="scenario-card-editable scenario-weak" id="scenarioWeakCard">
+                            <span class="scenario-card-icon">🔴</span>
+                            <span class="scenario-card-title">Weak</span>
+                            <div class="scenario-card-rate">
+                                <input type="number" id="scenarioWeakRate" min="0" max="15" step="0.1" value="2" class="scenario-rate-input" aria-label="Weak growth rate">
+                                <span class="suffix-symbol">%</span>
+                            </div>
+                            <p class="scenario-card-hint">Conservative / cautious</p>
+                        </div>
+
+                        <div class="scenario-card-editable scenario-average active" id="scenarioAverageCard">
+                            <span class="scenario-card-icon">🟢</span>
+                            <span class="scenario-card-title">Average</span>
+                            <div class="scenario-card-rate">
+                                <input type="number" id="scenarioAverageRate" min="0" max="15" step="0.1" value="5" class="scenario-rate-input" aria-label="Average growth rate">
+                                <span class="suffix-symbol">%</span>
+                            </div>
+                            <p class="scenario-card-hint">Typical UK equities</p>
+                        </div>
+
+                        <div class="scenario-card-editable scenario-strong" id="scenarioStrongCard">
+                            <span class="scenario-card-icon">🟡</span>
+                            <span class="scenario-card-title">Strong</span>
+                            <div class="scenario-card-rate">
+                                <input type="number" id="scenarioStrongRate" min="0" max="15" step="0.1" value="8" class="scenario-rate-input" aria-label="Strong growth rate">
+                                <span class="suffix-symbol">%</span>
+                            </div>
+                            <p class="scenario-card-hint">Optimistic / bullish</p>
+                        </div>
+                    </div>
+
+                    <p class="form-hint" id="scenarioValidationMsg" style="color: #dc3545; display: none;">⚠️ Rates must go up: Weak &lt; Average &lt; Strong</p>
+                    <p class="form-hint">Click a scenario to set your primary growth rate. The selected one drives the main projection.</p>
+                </div>
+
+                <!-- Platform & Fees (Optional) -->
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="includeFees">
+                        <span>💸 Include Platform &amp; Fund Fees</span>
+                    </label>
+                    <p class="input-hint">Fees eat into your growth every year. Add them here for a more realistic projection.</p>
+                </div>
+
+                <div id="feesSection" style="display: none;">
+                    <div class="fees-grid">
+                        <div class="fee-card">
+                            <span class="fee-card-icon">🏦</span>
+                            <label for="platformFee" class="fee-card-title">Platform Fee</label>
+                            <div class="fee-card-rate">
+                                <input type="number" id="platformFee" min="0" max="3" step="0.01" value="0.25" class="fee-rate-input" aria-label="Platform fee">
+                                <span class="suffix-symbol">%</span>
+                            </div>
+                            <p class="fee-card-hint">e.g. Hargreaves Lansdown, AJ Bell, Vanguard</p>
+                        </div>
+
+                        <div class="fee-card">
+                            <span class="fee-card-icon">📦</span>
+                            <label for="fundFee" class="fee-card-title">Fund / OCF Fee</label>
+                            <div class="fee-card-rate">
+                                <input type="number" id="fundFee" min="0" max="3" step="0.01" value="0.15" class="fee-rate-input" aria-label="Fund management fee">
+                                <span class="suffix-symbol">%</span>
+                            </div>
+                            <p class="fee-card-hint">Ongoing Charge Figure on your fund(s)</p>
+                        </div>
+
+                        <div class="fee-card">
+                            <span class="fee-card-icon">🤝</span>
+                            <label for="adviserFee" class="fee-card-title">Adviser Fee</label>
+                            <div class="fee-card-rate">
+                                <input type="number" id="adviserFee" min="0" max="3" step="0.01" value="0" class="fee-rate-input" aria-label="Adviser fee">
+                                <span class="suffix-symbol">%</span>
+                            </div>
+                            <p class="fee-card-hint">Annual IFA / adviser charge (if any)</p>
+                        </div>
+                    </div>
+
+                    <div class="fees-summary" id="feesSummary">
+                        <span class="fees-summary-label">Total Annual Fees:</span>
+                        <span class="fees-summary-value" id="totalFeeDisplay">0.40%</span>
+                        <span class="fees-summary-note">— deducted from growth each year</span>
+                    </div>
+                </div>
+
+                <!-- Hidden field that receives the selected rate (replaces old investmentGrowth) -->
+                <input type="hidden" id="investmentGrowth" value="5">
+            </div>
+            </div><!-- /wizard-step 4 -->
+
+            <!-- Step 5 of 5 -->
+            <div class="wizard-step" data-step="5" style="display:none">
+            <div class="financial-section">
+                <div class="section-header">
+                    <h3>Step 5: Other Income</h3>
+                    <p class="section-description">Got money coming in from elsewhere? State pension, DB pensions, rentals… it all counts. Less to withdraw from your pot.</p>
+                </div>
+
+                <!-- State Pension — always visible, everyone gets this -->
+                <div class="state-pension-section">
+                    <div class="income-source-card state-pension-card">
+                        <span class="income-source-icon">🏛️</span>
+                        <label class="income-source-title">State Pension</label>
+
+                        <div class="sp-qualifying-row">
+                            <label for="spQualifyingYears" class="sp-years-label">NI qualifying years</label>
+                            <div class="sp-years-control">
+                                <input type="range" id="spQualifyingYears" min="0" max="35" value="35" step="1" aria-label="NI qualifying years">
+                                <output id="spYearsDisplay" class="sp-years-value">35</output>
+                            </div>
+                            <p class="sp-years-hint" id="spYearsHint">35 years = full pension</p>
+                        </div>
+
+                        <div class="income-source-input">
+                            <span class="prefix-symbol">£</span>
+                            <input type="text" inputmode="numeric" id="statePension" placeholder="11,502" class="income-source-amount" aria-label="Annual state pension">
+                            <span class="sp-per-year">/yr</span>
+                        </div>
+
+                        <div class="income-start-age">
+                            <label for="statePensionAge" class="start-age-label">Starts at age</label>
+                            <input type="number" id="statePensionAge" value="67" min="55" max="75" class="start-age-input" aria-label="State pension start age">
+                        </div>
+                        <p class="income-source-hint">Full new state pension £11,502/yr (2025/26). Need min 10 years to qualify.</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="includeOtherIncome">
+                        <span>💰 I have additional retirement income</span>
+                    </label>
+                    <p class="input-hint">DB pensions, annuities, rental income or other sources that reduce your pot withdrawals</p>
+                </div>
+
+                <div id="otherIncomeSection" style="display: none;">
+                    <div class="other-income-grid">
+                        <div class="income-source-card">
+                            <span class="income-source-icon">🏢</span>
+                            <label for="dbPension" class="income-source-title">DB / Final Salary Pension</label>
+                            <div class="income-source-input">
+                                <span class="prefix-symbol">£</span>
+                                <input type="text" inputmode="numeric" id="dbPension" placeholder="0" class="income-source-amount" aria-label="Annual DB pension">
+                            </div>
+                            <div class="income-start-age">
+                                <label for="dbPensionAge" class="start-age-label">Starts at age</label>
+                                <input type="number" id="dbPensionAge" value="65" min="50" max="75" class="start-age-input" aria-label="DB pension start age">
+                            </div>
+                            <p class="income-source-hint">Defined Benefit pension income per year</p>
+                        </div>
+
+                        <div class="income-source-card">
+                            <span class="income-source-icon">🔒</span>
+                            <label for="annuityIncome" class="income-source-title">Annuity Income</label>
+                            <div class="income-source-input">
+                                <span class="prefix-symbol">£</span>
+                                <input type="text" inputmode="numeric" id="annuityIncome" placeholder="0" class="income-source-amount" aria-label="Annual annuity income">
+                            </div>
+                            <p class="income-source-hint">Purchased annuity payments per year</p>
+                        </div>
+
+                        <div class="income-source-card">
+                            <span class="income-source-icon">🏠</span>
+                            <label for="rentalIncome" class="income-source-title">Rental Income</label>
+                            <div class="income-source-input">
+                                <span class="prefix-symbol">£</span>
+                                <input type="text" inputmode="numeric" id="rentalIncome" placeholder="0" class="income-source-amount" aria-label="Annual rental income">
+                            </div>
+                            <p class="income-source-hint">Net rental income after costs &amp; tax</p>
+                        </div>
+
+                        <div class="income-source-card">
+                            <span class="income-source-icon">📋</span>
+                            <label for="otherIncomeGeneral" class="income-source-title">Other Income</label>
+                            <div class="income-source-input">
+                                <span class="prefix-symbol">£</span>
+                                <input type="text" inputmode="numeric" id="otherIncomeGeneral" placeholder="0" class="income-source-amount" aria-label="Other annual income">
+                            </div>
+                            <p class="income-source-hint">Part-time work, dividends, etc.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="other-income-summary" id="otherIncomeSummary">
+                    <span class="other-income-summary-label">Total Other Income:</span>
+                    <span class="other-income-summary-value" id="totalOtherIncomeDisplay">£0/yr</span>
+                    <span class="other-income-summary-note" id="otherIncomeSummaryNote">— reduces how much you need to withdraw from your pot</span>
+                </div>
+            </div>
+            </div><!-- /wizard-step 5 -->
+
+            <!-- Wizard Navigation -->
+            <div class="wizard-nav">
+                <span class="wizard-step-counter" id="wizardStepCounter">Step 1 of 5</span>
+                <div class="wizard-nav-buttons">
+                    <button type="button" id="wizardPrevBtn" class="btn-secondary wizard-btn" style="display:none">← Previous</button>
+                    <button type="button" id="wizardNextBtn" class="btn-primary wizard-btn">Next →</button>
+                    <button type="button" id="calculateBtn" class="btn-primary wizard-btn" style="display:none">📊 Calculate My Pension</button>
+                    <button type="button" id="updateResultsBtn" class="btn-primary wizard-btn" style="display:none">🔄 Update Results</button>
+                </div>
+            </div>
         </section>
 
         <!-- Results Display -->
         <section id="results" class="card" style="display: none;">
             <h2>Your Retirement Projection</h2>
-            
-            <div class="inflation-badge" id="inflationBadge" style="display: none;">
-                📉 Inflation Adjustment Included (Real values shown)
+
+            <div class="edit-inputs-bar">
+                <span class="edit-inputs-label">Quick edit:</span>
+                <button class="edit-step-link" data-edit-step="1">Timeline</button>
+                <button class="edit-step-link" data-edit-step="2">Pension</button>
+                <button class="edit-step-link" data-edit-step="3">Spending</button>
+                <button class="edit-step-link" data-edit-step="4">Assumptions</button>
+                <button class="edit-step-link" data-edit-step="5">Income</button>
             </div>
 
-            <p class="results-info">Based on <span id="resultsGrowthRate">5%</span> annual investment growth</p>
+            <div class="inflation-badge" id="inflationBadge" style="display: none;">
+                <button type="button" id="inflationToggleBtn" class="cashflow-scenario-btn" style="font-size: 0.85rem; padding: 6px 14px; border-radius: 6px; min-width: auto;">
+                    💷 Showing: Today's Money
+                </button>
+            </div>
+
+            <div class="other-income-badge" id="otherIncomeBadge" style="display: none;"></div>
+
+            <!-- 3-scenario range strip — always visible -->
+            <div class="scenario-range-strip" id="scenarioRangeStrip">
+                <div class="range-scenario range-weak" data-scenario="weak">
+                    <span class="range-label">🔴 Weak</span>
+                    <span class="range-pot" id="rangeWeakPot">£0</span>
+                    <span class="range-rate" id="rangeWeakRate">2%</span>
+                </div>
+                <div class="range-scenario range-average active" data-scenario="average">
+                    <span class="range-label">🟢 Average</span>
+                    <span class="range-pot" id="rangeAveragePot">£0</span>
+                    <span class="range-rate" id="rangeAverageRate">5%</span>
+                </div>
+                <div class="range-scenario range-strong" data-scenario="strong">
+                    <span class="range-label">🟡 Strong</span>
+                    <span class="range-pot" id="rangeStrongPot">£0</span>
+                    <span class="range-rate" id="rangeStrongRate">8%</span>
+                </div>
+            </div>
+
+            <p class="results-info" id="resultsInfo">Click a scenario above to see full details</p>
             
             <div class="results-grid">
                 <div class="result-card highlight">
@@ -216,7 +473,7 @@
                     <p class="big-number" id="projectedPot">£0</p>
                     <p class="sub-text" id="projectedPotReal" style="display: none;">Real value (today's pounds)</p>
                     <p class="sub-text" id="projectedPotNominal" style="display: none;">Nominal value (future pounds)</p>
-                    <p class="sub-text">Based on <span id="cardGrowthRate">5%</span> annual growth</p>
+                    <p class="sub-text" id="projectedPotGrowthLabel">Based on 5% annual growth</p>
                 </div>
 
                 <div class="result-card">
@@ -226,11 +483,10 @@
                 </div>
 
                 <div class="result-card">
-                    <h3>📊 Annual Income</h3>
+                    <h3>📊 Annual Income (4% SWR)</h3>
                     <p class="big-number" id="annualIncome">£0</p>
                     <p class="sub-text">Monthly: <span id="monthlyIncome">£0</span></p>
                     <p class="sub-text" id="incomeAlternative" style="display: none;"></p>
-                    <p class="sub-text-small">Based on 4% safe withdrawal</p>
                 </div>
 
                 <div class="result-card">
@@ -252,64 +508,75 @@
                 </div>
             </div>
 
-            <div id="scenarioComparison" style="display: none;">
-                <h3>📊 Scenario Analysis Comparison</h3>
-                <p class="form-hint">Comparison based on different investment growth assumptions:</p>
-                
-                <div class="scenario-results-grid">
-                    <div class="scenario-result-card">
-                        <h4>🔴 Weak Returns</h4>
-                        <p class="scenario-label">2% Annual Growth</p>
-                        <div class="scenario-value">
-                            <p><strong>Projected Pot:</strong> <span id="scenarioWeakPot">£0</span></p>
-                            <p><strong>Annual Income:</strong> <span id="scenarioWeakIncome">£0</span></p>
-                        </div>
-                        <p class="scenario-diff" id="scenarioWeakDiff"></p>
-                    </div>
+            <!-- Balance Sheet Section -->
+            <section id="balanceSheetSection" class="card" style="display:none; margin-top: 32px;">
+                <h3>Balance Sheet Explorer</h3>
+                <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem;">
+                    <label for="balanceYearSlider" style="font-weight:600;">Year:</label>
+                    <input type="range" id="balanceYearSlider" min="0" max="0" value="0" step="1" style="flex:1;">
+                    <output id="balanceYearValue" style="min-width: 60px; font-weight:600;">0</output>
+                    <button id="balancePrevYear" class="wizard-btn" style="min-width:40px;">←</button>
+                    <button id="balanceNextYear" class="wizard-btn" style="min-width:40px;">→</button>
+                </div>
+                <div id="balanceSheetDisplay" class="balance-sheet-display"></div>
+            </section>
+            <!-- /Balance Sheet Section -->
 
-                    <div class="scenario-result-card highlight">
-                        <h4>🟢 Average Returns (Base Case)</h4>
-                        <p class="scenario-label">5% Annual Growth</p>
-                        <div class="scenario-value">
-                            <p><strong>Projected Pot:</strong> <span id="scenarioAveragePot">£0</span></p>
-                            <p><strong>Annual Income:</strong> <span id="scenarioAverageIncome">£0</span></p>
+            <div id="chartViewHeader" style="display: none; margin-bottom: 1rem;">
+                <h3 id="mainChartTitle" style="margin-bottom: 0.15rem;">Your Detractio Fund</h3>
+                <p class="chart-hint" style="margin-bottom: 0.75rem; font-style: italic; opacity: 0.7;">"Because your future self deserves more than loose change and wishful thinking."</p>
+                <div class="cashflow-controls">
+                    <div>
+                        <div class="cashflow-scenario-toggle" id="sharedScenarioToggle">
+                            <button class="cashflow-scenario-btn shared-scenario-btn" data-scenario="weak" title="Weak growth scenario">
+                                <span class="scenario-dot" style="background:#dc3545"></span> Weak
+                            </button>
+                            <button class="cashflow-scenario-btn shared-scenario-btn active" data-scenario="average" title="Average growth scenario">
+                                <span class="scenario-dot" style="background:#667eea"></span> Average
+                            </button>
+                            <button class="cashflow-scenario-btn shared-scenario-btn" data-scenario="strong" title="Strong growth scenario">
+                                <span class="scenario-dot" style="background:#28a745"></span> Strong
+                            </button>
                         </div>
+                        <span class="scenario-toggle-hint">Toggle to view each growth scenario</span>
                     </div>
-
-                    <div class="scenario-result-card">
-                        <h4>🟡 Strong Returns</h4>
-                        <p class="scenario-label">8% Annual Growth</p>
-                        <div class="scenario-value">
-                            <p><strong>Projected Pot:</strong> <span id="scenarioStrongPot">£0</span></p>
-                            <p><strong>Annual Income:</strong> <span id="scenarioStrongIncome">£0</span></p>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <label for="chartViewSelect" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted, #6c757d);">View:</label>
+                            <select id="chartViewSelect" class="scenario-rate-input" style="min-width: 200px; padding: 0.35rem 0.5rem; font-size: 0.85rem; border-radius: 6px;">
+                                <option value="lifecycle" selected>Lifecycle Projection</option>
+                                <option value="cashflow">Retirement Cash Flow</option>
+                            </select>
                         </div>
-                        <p class="scenario-diff" id="scenarioStrongDiff"></p>
+                        <div class="chart-age-toggle">
+                            <label for="sharedAgeSlider">Plan to age:</label>
+                            <input type="range" id="sharedAgeSlider" min="65" max="110" value="100" step="1">
+                            <output id="sharedAgeValue" class="age-slider-value">100</output>
+                            <button id="sharedAgeReset" class="age-reset-btn" title="Reset to life expectancy">↺</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="chart-container" id="lifecycleChartContainer" style="min-height: 450px; position: relative; display: none;">
-                <h3 id="mainChartTitle">Your Financial Lifecycle</h3>
                 <p class="chart-hint" id="mainChartHint">Your complete financial journey from today through retirement</p>
-                <div class="chart-age-toggle">
-                    <label for="lifecycleAgeSlider">Plan to age:</label>
-                    <input type="range" id="lifecycleAgeSlider" min="65" max="110" value="100" step="1">
-                    <output id="lifecycleAgeValue" class="age-slider-value">100</output>
-                    <button id="lifecycleAgeReset" class="age-reset-btn" title="Reset to life expectancy">↺</button>
+                <div class="sporting-events-bar">
+                    <button id="sportingEventsToggle" class="sporting-events-btn" title="Show major sporting events on your timeline">
+                        🏆 Sporting Events
+                    </button>
+                    <button id="politicalEventsToggle" class="sporting-events-btn" title="Show political events on your timeline">
+                        🗳️ Political Events
+                    </button>
+                    <div id="sportingEventsSummary" class="sporting-events-summary" style="display: none;"></div>
+                    <div id="politicalEventsSummary" class="sporting-events-summary" style="display: none;"></div>
                 </div>
                 <canvas id="growthChart"></canvas>
+                <div id="dStagesLegend" class="dstages-legend" style="display: none;"></div>
                 <div id="lifecycleNarrative" class="chart-narrative" style="display: none;"></div>
             </div>
 
             <div class="chart-container" id="cashFlowChartContainer" style="min-height: 450px; position: relative; display: none;">
-                <h3>Retirement Cash Flow</h3>
-                <p class="chart-hint" id="cashFlowChartHint">Annual spending across all 3 growth scenarios — solid bars = funded, faded = shortfall</p>
-                <div class="chart-age-toggle">
-                    <label for="cashFlowAgeSlider">Plan to age:</label>
-                    <input type="range" id="cashFlowAgeSlider" min="65" max="110" value="100" step="1">
-                    <output id="cashFlowAgeValue" class="age-slider-value">100</output>
-                    <button id="cashFlowAgeReset" class="age-reset-btn" title="Reset to life expectancy">↺</button>
-                </div>
+                <p class="chart-hint" id="cashFlowChartHint">How your annual spending is funded each year — from your pot and other income sources</p>
                 <canvas id="cashFlowChart"></canvas>
             </div>
 
@@ -366,7 +633,7 @@
                 </div>
             </section>
 
-            <button id="recalculateBtn" class="btn-secondary">Recalculate</button>
+            <button id="recalculateBtn" class="btn-secondary">↩ Start Over</button>
         </section>
 
         <!-- Retirement Spending Analysis -->
@@ -451,9 +718,9 @@
         </section>
 
         <footer>
-            <p><strong>NestMapOS</strong> - Professional Pension & Retirement Planning Tool</p>
-            <p>⚠️ This calculator provides estimates only. Please consult a qualified financial advisor for personalized advice.</p>
-            <p class="small">© 2026 NestMapOS. All rights reserved. Based on UK pension regulations as of 2025.</p>
+            <p><strong>Detractio</strong> — The Art of a Well‑Timed Withdrawal</p>
+            <p>⚠️ This calculator provides estimates only. Please consult a qualified financial advisor for personalised advice.</p>
+            <p class="small">© 2026 Detractio. All rights reserved. Based on UK pension regulations as of 2025.</p>
         </footer>
     </div>
 
@@ -485,7 +752,125 @@
     <script src="charts/lifecycle-chart-builder.js"></script>
     <script src="charts/cash-flow-chart-builder.js"></script>
 
+    <!-- Auth & User Data -->
+    <script src="utils/auth.js"></script>
+    <script src="utils/user-data.js"></script>
+
     <!-- Application orchestrator (must load last) -->
     <script src="app.js"></script>
+
+    <!-- Auth header + save/load wiring -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Update header auth link
+        function updateAuthLink() {
+            const link = document.getElementById('headerAuthLink');
+            if (!link) return;
+            const user = Auth.getCurrentUser();
+            if (user) {
+                link.textContent = '👤 ' + user.firstName;
+                link.title = 'Logged in as ' + user.email;
+            } else {
+                link.textContent = '🔑 Login';
+                link.title = 'Sign in or create an account';
+            }
+        }
+        updateAuthLink();
+
+        // Save/Load bar visibility
+        var saveLoadBar = document.getElementById('saveLoadBar');
+        var saveBtn = document.getElementById('saveDataBtn');
+        var loadBtn = document.getElementById('loadDataBtn');
+        var saveLoadMsg = document.getElementById('saveLoadMsg');
+
+        function updateSaveLoadBar() {
+            if (!saveLoadBar) return;
+            if (Auth.isLoggedIn()) {
+                saveLoadBar.style.display = '';
+                var lastSaved = UserData.getLastSaved();
+                if (lastSaved) {
+                    saveLoadMsg.textContent = 'Last saved: ' + new Date(lastSaved).toLocaleString('en-GB');
+                    saveLoadMsg.style.display = '';
+                } else {
+                    saveLoadMsg.style.display = 'none';
+                }
+            } else {
+                saveLoadBar.style.display = 'none';
+            }
+        }
+        updateSaveLoadBar();
+
+        // Auto-load on page load if logged in and has saved data
+        if (Auth.isLoggedIn() && UserData.hasSavedData()) {
+            var result = UserData.loadFormData();
+            if (result.loaded) {
+                saveLoadMsg.textContent = '✅ Data loaded — last saved: ' + new Date(result.savedAt).toLocaleString('en-GB');
+                saveLoadMsg.style.display = '';
+            }
+        }
+
+        // Save button
+        if (saveBtn) {
+            saveBtn.addEventListener('click', function () {
+                var result = UserData.saveFormData();
+                if (result.success) {
+                    saveLoadMsg.textContent = '✅ Saved at ' + new Date().toLocaleString('en-GB');
+                    saveLoadMsg.style.display = '';
+                } else {
+                    saveLoadMsg.textContent = '❌ ' + result.error;
+                    saveLoadMsg.style.display = '';
+                }
+            });
+        }
+
+        // Load button
+        if (loadBtn) {
+            loadBtn.addEventListener('click', function () {
+                var result = UserData.loadFormData();
+                if (result.loaded) {
+                    saveLoadMsg.textContent = '✅ Data loaded — last saved: ' + new Date(result.savedAt).toLocaleString('en-GB');
+                    saveLoadMsg.style.display = '';
+                } else if (result.error) {
+                    saveLoadMsg.textContent = '❌ ' + result.error;
+                    saveLoadMsg.style.display = '';
+                } else {
+                    saveLoadMsg.textContent = 'No saved data found.';
+                    saveLoadMsg.style.display = '';
+                }
+            });
+        }
+
+        // ── Auto-save on input change (debounced) ────────────
+        var _autoSaveTimer = null;
+        function autoSave() {
+            if (!Auth.isLoggedIn()) return;
+            if (_autoSaveTimer) clearTimeout(_autoSaveTimer);
+            _autoSaveTimer = setTimeout(function () {
+                var result = UserData.saveFormData();
+                if (result.success && saveLoadMsg) {
+                    saveLoadMsg.textContent = '💾 Auto-saved at ' + new Date().toLocaleString('en-GB');
+                    saveLoadMsg.style.display = '';
+                }
+            }, 1500);
+        }
+
+        // Listen for changes on all tracked form fields
+        UserData.FIELDS.forEach(function (field) {
+            if (field.type === 'radio') {
+                document.querySelectorAll('input[name="' + field.name + '"]').forEach(function (el) {
+                    el.addEventListener('change', autoSave);
+                });
+            } else {
+                var el = document.getElementById(field.id);
+                if (el) {
+                    el.addEventListener('change', autoSave);
+                    if (el.tagName === 'INPUT' && el.type !== 'checkbox') {
+                        el.addEventListener('input', autoSave);
+                    }
+                }
+            }
+        });
+    });
+    </script>
 </body>
 </html>
